@@ -368,15 +368,16 @@
                         </h4>
                         <p class="text-[11px] text-gray-500 dark:text-gray-400" data-i18n="aiCamDesc">拍照或從相簿選擇食物圖片，系統將自動提取卡路里與營養！</p>
                         
+                        <!-- Mobile-Compatible File Inputs with direct click triggers -->
                         <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageUpload(event)">
                         <input type="file" id="galleryInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
                         
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="document.getElementById('cameraInput').click()" class="py-2.5 px-2 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+                            <button type="button" onclick="document.getElementById('cameraInput').click()" class="py-2.5 px-2 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
                                 <i data-lucide="camera" class="w-4 h-4"></i>
                                 <span data-i18n="takePhotoBtn">📷 即時拍照</span>
                             </button>
-                            <button onclick="document.getElementById('galleryInput').click()" class="py-2.5 px-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+                            <button type="button" onclick="document.getElementById('galleryInput').click()" class="py-2.5 px-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
                                 <i data-lucide="image" class="w-4 h-4"></i>
                                 <span data-i18n="uploadAlbumBtn">🖼️ 手機相簿</span>
                             </button>
@@ -870,7 +871,6 @@
             const weight = parseFloat(document.getElementById('userWeight').value);
             const activity = parseFloat(document.getElementById('userActivity').value);
 
-            // Harris-Benedict BMR Calculation
             let bmr = (gender === 'male')
                 ? (88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age))
                 : (447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age));
@@ -893,7 +893,6 @@
             }
             const dayLogs = userData.logs[dateStr];
 
-            // Calculate totals
             let consumed = 0, burned = 0, protein = 0, carbs = 0, fat = 0;
             dayLogs.foods.forEach(f => {
                 consumed += f.cal;
@@ -908,7 +907,6 @@
             const targetCal = p.targetCal;
             const remaining = targetCal - consumed + burned;
 
-            // Update Header & Ring
             document.getElementById('headerTargetCal').innerText = targetCal;
             document.getElementById('headerBMI').innerText = p.bmi;
             
@@ -925,7 +923,6 @@
             document.getElementById('valConsumedText').innerText = `${consumed} kcal`;
             document.getElementById('valBurnedText').innerText = `${burned} kcal`;
 
-            // Ring progress
             let percent = Math.min(100, Math.round((consumed / targetCal) * 100));
             document.getElementById('topProgressBar').style.width = `${percent}%`;
             
@@ -934,18 +931,12 @@
             const offset = circumference - (percent / 100) * circumference;
             circle.style.strokeDashoffset = offset;
 
-            // Macros
             document.getElementById('macroProtein').innerText = `${protein.toFixed(1)}g`;
             document.getElementById('macroCarbs').innerText = `${carbs.toFixed(1)}g`;
             document.getElementById('macroFat').innerText = `${fat.toFixed(1)}g`;
 
-            // Render Favorites
             renderFavorites();
-
-            // Render Logs
             renderLogsList(dayLogs);
-
-            // Update AI Suggestion
             updateAISuggestionText(consumed, burned, targetCal);
         }
 
@@ -1054,9 +1045,9 @@
 
         async function callGeminiAPI(payload) {
             const activeKey = apiKey || "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${activeKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${activeKey}`;
             
-            for (let attempt = 0; attempt < 3; attempt++) {
+            for (let attempt = 0; attempt < 5; attempt++) {
                 try {
                     const response = await fetch(apiUrl, {
                         method: 'POST',
@@ -1073,7 +1064,6 @@
             return null;
         }
 
-        // Live auto-estimate as user types food name
         let typingTimer;
         document.getElementById('foodName').addEventListener('input', (e) => {
             clearTimeout(typingTimer);
@@ -1084,7 +1074,7 @@
                 const status = document.getElementById('autoCalcStatus');
                 status.classList.remove('hidden');
 
-                const prompt = `Estimate the nutrition for one standard portion of "${val}". Return strictly valid JSON with keys: "name" (string), "cal" (number), "protein" (number in grams), "carbs" (number in grams), "fat" (number in grams). No markdown codeblocks.`;
+                const prompt = `Estimate nutrition for "${val}". Return strictly valid JSON with keys: "name" (string), "cal" (number), "protein" (number in grams), "carbs" (number in grams), "fat" (number in grams). No markdown.`;
                 const resText = await callGeminiAPI({
                     contents: [{ role: 'user', parts: [{ text: prompt }] }],
                     generationConfig: { responseMimeType: "application/json" }
@@ -1103,17 +1093,17 @@
             }, 800);
         });
 
-        // AI Image Upload & Recognition
         async function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
             reader.onload = async function(e) {
-                const base64Data = e.target.result.split(',')[1];
-                const mimeType = file.type;
+                const fullBase64 = e.target.result;
+                const base64Data = fullBase64.split(',')[1];
+                const mimeType = file.type || 'image/jpeg';
 
-                document.getElementById('foodPreviewImg').src = e.target.result;
+                document.getElementById('foodPreviewImg').src = fullBase64;
                 document.getElementById('imagePreviewContainer').classList.remove('hidden');
                 document.getElementById('aiAnalyzingSpinner').classList.remove('hidden');
 
@@ -1177,7 +1167,6 @@
             const duration = parseInt(document.getElementById('exerciseDuration').value) || 30;
             const weight = usersDB[currentUser]?.profile?.weight || 65;
 
-            // MET values roughly estimated
             const metMap = { running: 9.8, cycling: 7.5, swimming: 8.0, hiit: 10.0, weightlifting: 5.5, yoga: 3.0, walking: 4.0 };
             const met = metMap[type] || 6.0;
             const calories = Math.round((met * 3.5 * weight / 200) * duration);
@@ -1204,7 +1193,7 @@
 
         async function updateAISuggestionText(consumed, burned, target) {
             const diff = target - consumed + burned;
-            let prompt = `User daily target: ${target} kcal, Consumed: ${consumed} kcal, Burned: ${burned} kcal, Remaining: ${diff} kcal. Give a short, encouraging, professional health/diet tip in Traditional Chinese (max 2 sentences).`;
+            let prompt = `User daily target: ${target} kcal, Consumed: ${consumed} kcal, Burned: ${burned} kcal. Give a short, encouraging health/diet tip in Traditional Chinese (max 2 sentences).`;
             const text = await callGeminiAPI({ contents: [{ role: 'user', parts: [{ text: prompt }] }] });
             if (text) {
                 document.getElementById('suggestionText').innerText = text.trim();
@@ -1229,14 +1218,14 @@
 
             const userData = usersDB[currentUser];
             const p = userData.profile;
-            const sysPrompt = `You are FitSecret AI health assistant. User profile: Age ${p.age}, Gender ${p.gender}, Height ${p.height}cm, Weight ${p.weight}kg, Daily target ${p.targetCal} kcal. Provide professional, concise, encouraging advice in Traditional Chinese.`;
+            const sysPrompt = `You are FitSecret AI health assistant. User profile: Age ${p.age}, Gender ${p.gender}, Height ${p.height}cm, Weight ${p.weight}kg, Daily target ${p.targetCal} kcal. Provide professional, concise advice in Traditional Chinese.`;
 
             const resText = await callGeminiAPI({
                 systemInstruction: { parts: [{ text: sysPrompt }] },
                 contents: [{ role: 'user', parts: [{ text: msg }] }]
             });
 
-            const reply = resText || "收到！建議保持均衡飲食與規律運動，如有任何體重管理疑問隨時問我！";
+            const reply = resText || "收到！建議保持均衡飲食與規律運動！";
             chatContainer.innerHTML += `
                 <div class="flex gap-2">
                     <div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold flex-shrink-0 text-[10px]">AI</div>
