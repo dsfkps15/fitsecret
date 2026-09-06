@@ -414,13 +414,13 @@
                                     <i data-lucide="refresh-cw" class="w-3 h-3 animate-spin"></i> 自動估算中...
                                 </span>
                             </div>
-                            <input type="text" id="foodName" required placeholder="輸入食物名稱 (如：干炒牛河 / 雞胸肉餐盒)" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none transition">
+                            <input type="text" id="foodName" placeholder="輸入食物名稱 (如：干炒牛河 / 雞胸肉餐盒)" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none transition">
                         </div>
 
                         <div class="grid grid-cols-2 gap-2.5">
                             <div>
                                 <label class="block text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="calories">卡路里 (kcal)</label>
-                                <input type="number" id="foodCal" required min="0" placeholder="0" class="w-full px-3 py-2 text-sm font-bold text-purple-700 dark:text-purple-300 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
+                                <input type="number" id="foodCal" min="0" placeholder="0" class="w-full px-3 py-2 text-sm font-bold text-purple-700 dark:text-purple-300 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
                             </div>
                             <div>
                                 <label class="block text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="proteinG">蛋白質 (g)</label>
@@ -476,7 +476,7 @@
                     </button>
                 </div>
 
-                <form onsubmit="submitExerciseLog(event)" class="p-4 space-y-3.5">
+                <form id="exerciseForm" onsubmit="submitExerciseLog(event)" class="p-4 space-y-3.5">
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="exerciseItem">運動項目</label>
                         <select id="exerciseName" onchange="calcExerciseCalories()" class="w-full px-3 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
@@ -502,7 +502,7 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="durationMin">運動時間 (分鐘)</label>
-                        <input type="number" id="exerciseDuration" required min="1" value="30" oninput="calcExerciseCalories()" class="w-full px-3 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <input type="number" id="exerciseDuration" min="1" value="30" oninput="calcExerciseCalories()" class="w-full px-3 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
                     </div>
 
                     <div class="bg-indigo-50 dark:bg-indigo-950/40 p-3 rounded-xl flex justify-between items-center text-xs text-indigo-900 dark:text-indigo-200">
@@ -608,198 +608,16 @@
 
     <!-- App Main Script Logic -->
     <script>
-        // --- Translations Dictionary (Multi-language Support) ---
-        const i18n = {
-            'zh-HK': {
-                welcomeTitle: "歡迎使用 FitSecret",
-                welcomeSub: "您專屬的手機卡路里與健康 AI 助理",
-                login: "登入",
-                register: "註冊新帳號",
-                username: "使用者名稱 (Username)",
-                password: "密碼 (最少 8 位字元)",
-                loginBtn: "登入",
-                setupTitle: "建立個人健康檔案",
-                setupSub: "請填寫基本資料，為您計算每日建議攝取熱量",
-                age: "年齡",
-                gender: "性別",
-                male: "男",
-                female: "女",
-                height: "身高 (cm)",
-                weight: "體重 (kg)",
-                activity: "每週運動頻率",
-                act1: "久坐 / 幾乎不運動",
-                act2: "輕度運動 (每週 1-3 天)",
-                act3: "中度運動 (每週 3-5 天)",
-                act4: "高強度運動 (每週 6-7 天)",
-                saveBtn: "儲存並進入主頁",
-                targetHeaderTitle: "個人目標數據",
-                targetTag: "目標:",
-                settings: "修改",
-                remainingBudget: "剩餘熱量配額",
-                consumedText: "攝取",
-                burnedText: "消耗",
-                protein: "蛋白質",
-                carbs: "碳水化合物",
-                fat: "脂肪",
-                dietTipTitle: "每日熱量與運動 AI 建議",
-                addFoodBtn: "+ 記錄飲食 (拍照/相簿/手動)",
-                addExerciseBtn: "+ 記錄運動",
-                favoritesTitle: "我的最愛食物 (點擊快速補登)",
-                noFavorites: "暫無最愛食物，在飲食紀錄中點擊星號即可加入。",
-                dailyLogs: "當日明細紀錄",
-                noLogs: "今天尚未有任何飲食或運動記錄。",
-                chatWithEditor: "對話小編",
-                addFoodHeader: "新增飲食紀錄",
-                aiCamTitle: "AI 智能圖片辨識食物 (5秒內自動分析)",
-                aiCamDesc: "拍照或從相簿選擇食物圖片，系統將自動提取卡路里與營養！",
-                takePhotoBtn: "📷 即時拍照",
-                uploadAlbumBtn: "🖼️ 手機相簿",
-                analyzing: "AI 智能辨識中 (上限5秒)...",
-                orManual: "或 手動輸入食物名稱 (自動生成營養)",
-                foodName: "食物 / 飲品名稱",
-                calories: "卡路里 (kcal)",
-                proteinG: "蛋白質 (g)",
-                carbsG: "碳水化合物 (g)",
-                fatG: "脂肪 (g)",
-                addLogBtn: "加入飲食紀錄",
-                addExerciseHeader: "新增運動紀錄",
-                exerciseItem: "運動項目",
-                durationMin: "運動時間 (分鐘)",
-                estimatedBurn: "預計消耗熱量：",
-                addExerciseLogBtn: "扣減當日熱量並紀錄",
-                exerciseDetailHeader: "當日運動消耗明細",
-                aiRole: "FitSecret AI 健康飲食與運動顧問",
-                unrecognizedTitle: "無法於 5 秒內辨識圖片",
-                unrecognizedDesc: "未能成功分辨相片中的食物。請直接手動輸入「食物名稱」，AI 將即時為您自動計算卡路里、蛋白質及脂肪！"
-            },
-            'en': {
-                welcomeTitle: "Welcome to FitSecret",
-                welcomeSub: "Your personal mobile calorie & health AI assistant",
-                login: "Log In",
-                register: "Register",
-                username: "Username",
-                password: "Password (min 8 chars)",
-                loginBtn: "Log In",
-                setupTitle: "Create Health Profile",
-                setupSub: "Enter details to calculate daily recommended intake",
-                age: "Age",
-                gender: "Gender",
-                male: "Male",
-                female: "Female",
-                height: "Height (cm)",
-                weight: "Weight (kg)",
-                activity: "Weekly Exercise Frequency",
-                act1: "Sedentary / Little exercise",
-                act2: "Lightly active (1-3 days/wk)",
-                act3: "Moderately active (3-5 days/wk)",
-                act4: "Very active (6-7 days/wk)",
-                saveBtn: "Save & Proceed",
-                targetHeaderTitle: "Target Health Profile",
-                targetTag: "Target:",
-                settings: "Edit",
-                remainingBudget: "Remaining Calories",
-                consumedText: "Consumed",
-                burnedText: "Burned",
-                protein: "Protein",
-                carbs: "Carbs",
-                fat: "Fat",
-                dietTipTitle: "Daily Diet & Exercise AI Advice",
-                addFoodBtn: "+ Log Food (Cam/Album/Manual)",
-                addExerciseBtn: "+ Log Exercise",
-                favoritesTitle: "Favorite Foods (Quick Log)",
-                noFavorites: "No favorites yet. Tap star icon in logs to add.",
-                dailyLogs: "Daily Logs",
-                noLogs: "No food or exercise logged today.",
-                chatWithEditor: "Chat AI",
-                addFoodHeader: "Add Food Log",
-                aiCamTitle: "AI Photo Recognition (5s Limit)",
-                aiCamDesc: "Snap a photo or select from album to auto-detect nutrition!",
-                takePhotoBtn: "📷 Camera",
-                uploadAlbumBtn: "🖼️ Album Photo",
-                analyzing: "AI Analyzing (max 5s)...",
-                orManual: "OR Manual Input (Auto-generates nutrition)",
-                foodName: "Food / Drink Name",
-                calories: "Calories (kcal)",
-                proteinG: "Protein (g)",
-                carbsG: "Carbs (g)",
-                fatG: "Fat (g)",
-                addLogBtn: "Add to Food Log",
-                addExerciseHeader: "Add Exercise Log",
-                exerciseItem: "Exercise Activity",
-                durationMin: "Duration (minutes)",
-                estimatedBurn: "Estimated Burn:",
-                addExerciseLogBtn: "Deduct Calories & Log",
-                exerciseDetailHeader: "Exercise Burn Logs Today",
-                aiRole: "FitSecret AI Health & Diet Consultant",
-                unrecognizedTitle: "Image Not Recognized in 5s",
-                unrecognizedDesc: "Could not identify food from image. Please manually enter food name below, and AI will auto-generate nutrition details instantly!"
-            }
-        };
-
-        let currentLang = 'zh-HK';
-        let authMode = 'login';
-        let currentUser = null;
-        let usersData = {};
-        let selectedDate = new Date().toISOString().split('T')[0];
-        let currentUploadedImageBase64 = null;
-        let foodNameDebounceTimer = null;
-
-        window.onload = function() {
-            lucide.createIcons();
-            loadLocalStorageData();
-            initDatePicker();
-            initFoodNameListener();
-            checkSession();
-        };
-
-        function initDatePicker() {
-            const dateInput = document.getElementById('datePicker');
-            dateInput.value = selectedDate;
-            dateInput.addEventListener('change', (e) => {
-                selectedDate = e.target.value;
-                renderDashboard();
-            });
-        }
-
-        // Auto-generate Calories, Protein, Fat as user types food name
-        function initFoodNameListener() {
-            const foodInput = document.getElementById('foodName');
-            foodInput.addEventListener('input', (e) => {
-                const name = e.target.value.trim();
-                clearTimeout(foodNameDebounceTimer);
-                if (!name) {
-                    document.getElementById('autoCalcStatus').classList.add('hidden');
-                    return;
-                }
-                
-                // Show estimating indicator
-                document.getElementById('autoCalcStatus').classList.remove('hidden');
-
-                // Debounce 600ms after user finishes typing
-                foodNameDebounceTimer = setTimeout(() => {
-                    autoEstimateNutrition(name);
-                }, 600);
-            });
-        }
-
-        function loadLocalStorageData() {
-            const data = localStorage.getItem('fitsecret_users');
-            if (data) {
-                try { usersData = JSON.parse(data); } catch (e) { usersData = {}; }
-            }
-            const activeUser = localStorage.getItem('fitsecret_active_user');
-            if (activeUser && usersData[activeUser]) {
-                currentUser = activeUser;
-            }
-        }
-
         function saveUsersData() {
             localStorage.setItem('fitsecret_users', JSON.stringify(usersData));
         }
 
         function getCurrentUserData() {
             if (!currentUser || !usersData[currentUser]) return null;
-            return usersData[currentUser];
+            const user = usersData[currentUser];
+            if (!user.logs) user.logs = {};
+            if (!user.favorites) user.favorites = [];
+            return user;
         }
 
         function checkSession() {
@@ -1350,64 +1168,98 @@
         }
 
         function submitFoodLog(e) {
-            e.preventDefault();
-            const name = document.getElementById('foodName').value.trim();
-            const cal = parseFloat(document.getElementById('foodCal').value) || 0;
-            const protein = parseFloat(document.getElementById('foodProtein').value) || 0;
-            const carbs = parseFloat(document.getElementById('foodCarbs').value) || 0;
-            const fat = parseFloat(document.getElementById('foodFat').value) || 0;
+            if (e) e.preventDefault();
+            try {
+                const foodNameInput = document.getElementById('foodName');
+                const name = foodNameInput ? foodNameInput.value.trim() : '';
 
-            const user = getCurrentUserData();
-            if (!user.logs[selectedDate]) user.logs[selectedDate] = { food: [], exercise: [] };
+                if (!name) {
+                    alert(currentLang === 'zh-HK' ? '請輸入食物或飲品名稱！' : 'Please enter food or drink name!');
+                    return;
+                }
 
-            user.logs[selectedDate].food.push({
-                id: Date.now(),
-                name: name,
-                calories: cal,
-                protein: protein,
-                carbs: carbs,
-                fat: fat,
-                image: currentUploadedImageBase64
-            });
+                const calInput = document.getElementById('foodCal');
+                let cal = parseFloat(calInput ? calInput.value : '');
+                if (isNaN(cal) || cal < 0) cal = 0;
 
-            saveUsersData();
-            closeModal('foodModal');
-            resetFoodForm();
-            renderDashboard();
+                const protein = parseFloat(document.getElementById('foodProtein')?.value) || 0;
+                const carbs = parseFloat(document.getElementById('foodCarbs')?.value) || 0;
+                const fat = parseFloat(document.getElementById('foodFat')?.value) || 0;
+
+                const user = getCurrentUserData();
+                if (!user) return;
+
+                if (!user.logs[selectedDate]) {
+                    user.logs[selectedDate] = { food: [], exercise: [] };
+                }
+
+                user.logs[selectedDate].food.push({
+                    id: Date.now(),
+                    name: name,
+                    calories: cal,
+                    protein: protein,
+                    carbs: carbs,
+                    fat: fat,
+                    image: currentUploadedImageBase64
+                });
+
+                saveUsersData();
+                closeModal('foodModal');
+                resetFoodForm();
+                renderDashboard();
+            } catch (err) {
+                console.error("Error submitting food log:", err);
+            }
         }
 
         function calcExerciseCalories() {
             const select = document.getElementById('exerciseName');
-            const met = parseFloat(select.options[select.selectedIndex].getAttribute('data-met') || "5");
-            const duration = parseFloat(document.getElementById('exerciseDuration').value) || 0;
+            if (!select || select.selectedIndex < 0) return 0;
+            const option = select.options[select.selectedIndex];
+            const met = parseFloat(option ? option.getAttribute('data-met') : "5") || 5;
+            const durationVal = document.getElementById('exerciseDuration')?.value;
+            const duration = parseFloat(durationVal) || 0;
 
             const user = getCurrentUserData();
             const weight = user?.profile?.weight || 65;
 
             const burned = Math.round(met * weight * (duration / 60));
-            document.getElementById('calculatedBurn').innerText = `${burned} kcal`;
+            const burnElem = document.getElementById('calculatedBurn');
+            if (burnElem) {
+                burnElem.innerText = `${burned} kcal`;
+            }
             return burned;
         }
 
         function submitExerciseLog(e) {
-            e.preventDefault();
-            const name = document.getElementById('exerciseName').value;
-            const duration = parseInt(document.getElementById('exerciseDuration').value);
-            const burned = calcExerciseCalories();
+            if (e) e.preventDefault();
+            try {
+                const select = document.getElementById('exerciseName');
+                const name = select ? select.value : '運動';
+                const durationInput = document.getElementById('exerciseDuration');
+                const duration = parseInt(durationInput ? durationInput.value : '30') || 0;
+                const burned = calcExerciseCalories();
 
-            const user = getCurrentUserData();
-            if (!user.logs[selectedDate]) user.logs[selectedDate] = { food: [], exercise: [] };
+                const user = getCurrentUserData();
+                if (!user) return;
 
-            user.logs[selectedDate].exercise.push({
-                id: Date.now(),
-                name: name,
-                duration: duration,
-                calories: burned
-            });
+                if (!user.logs[selectedDate]) {
+                    user.logs[selectedDate] = { food: [], exercise: [] };
+                }
 
-            saveUsersData();
-            closeModal('exerciseModal');
-            renderDashboard();
+                user.logs[selectedDate].exercise.push({
+                    id: Date.now(),
+                    name: name,
+                    duration: duration,
+                    calories: burned
+                });
+
+                saveUsersData();
+                closeModal('exerciseModal');
+                renderDashboard();
+            } catch (err) {
+                console.error("Error submitting exercise log:", err);
+            }
         }
 
         function openAIChatModal() {
@@ -1420,20 +1272,84 @@
             }
         }
 
+        function formatMarkdownText(text) {
+            if (!text) return "";
+            return text
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/^\s*-\s+/gm, '• ')
+                .replace(/\n/g, '<br>');
+        }
+
         function appendChatMessage(role, text) {
             const chatContainer = document.getElementById('chatMessages');
             const isUser = role === 'user';
+            const formattedText = formatMarkdownText(text);
             
             const msgHtml = `
                 <div class="flex gap-2 ${isUser ? 'justify-end' : 'justify-start'}">
                     ${!isUser ? `<div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] flex-shrink-0">👩‍⚕️</div>` : ''}
                     <div class="max-w-[82%] p-2.5 rounded-2xl text-xs leading-relaxed ${isUser ? 'bg-purple-600 text-white rounded-tr-none' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow border border-purple-100 dark:border-purple-800 rounded-tl-none'}">
-                        ${text.replace(/\n/g, '<br>')}
+                        ${formattedText}
                     </div>
                 </div>
             `;
             chatContainer.insertAdjacentHTML('beforeend', msgHtml);
             chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function appendChatTypingIndicator(id) {
+            const chatContainer = document.getElementById('chatMessages');
+            const msgHtml = `
+                <div id="${id}" class="flex gap-2 justify-start items-center">
+                    <div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] flex-shrink-0">👩‍⚕️</div>
+                    <div class="bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 p-2.5 rounded-2xl text-xs shadow border border-purple-100 dark:border-purple-800 rounded-tl-none flex items-center gap-1.5">
+                        <span class="font-medium">小編思考中</span>
+                        <span class="flex gap-1">
+                            <span class="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce"></span>
+                            <span class="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                            <span class="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                        </span>
+                    </div>
+                </div>
+            `;
+            chatContainer.insertAdjacentHTML('beforeend', msgHtml);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function removeChatTypingIndicator(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function generateFallbackChatReply(text, user, totalCal) {
+            const targetCal = user?.profile?.targetCal || 2000;
+            const remaining = targetCal - totalCal;
+            const q = text.toLowerCase();
+
+            if (q.includes('晚餐') || q.includes('食咩') || q.includes('食乜') || q.includes('推介') || q.includes('建議') || q.includes('dinner')) {
+                if (remaining > 500) {
+                    return `今晚配額非常充足（仲有 **${remaining} kcal**）！\n\n建議晚餐搭配：\n1. **主菜**：香煎三文魚 / 蒸雞胸肉\n2. **蔬菜**：蒜蓉炒菜心 / 蒸西蘭花\n3. **澱粉**：半碗糙米飯或藜麥\n\n補足蛋白質與膳食纖維，健康又飽腹！`;
+                } else if (remaining > 0) {
+                    return `今日熱量剩餘 **${remaining} kcal**，建議選輕食晚餐：\n\n• 蒸魚切塊 / 白灼蝦\n• 涼拌青瓜與一碗蔬菜湯\n• 避免高油炸及濃醬汁，可順利達成今日目標！`;
+                } else {
+                    return `今日熱量已達標或略有超標！\n\n如果今晚覺得肚餓，建議選擇：\n• 一碗清熱蔬果湯（如蕃茄豆腐湯）\n• 無糖豆漿或少許低糖水果（藍莓/蘋果）\n避免高碳水與重油飲食即可！`;
+                }
+            }
+
+            if (q.includes('減肥') || q.includes('減脂') || q.includes('瘦身') || q.includes('weight')) {
+                return `要有效減脂，最核心係 **「熱量赤字」**（消耗卡路里 > 攝取卡路里）！\n\n小編給您的三大秘訣：\n1. **每餐先食蔬菜同蛋白質**，最後食澱粉，降低升糖指數。\n2. **多飲水**（每日至少 2000-2500ml），提升新陳代謝。\n3. **配合每週 3 次有氧 + 重訓**，保持肌肉量並持續燃脂！`;
+            }
+
+            if (q.includes('蛋白') || q.includes('雞胸') || q.includes('增肌') || q.includes('protein')) {
+                return `蛋白質係肌肉修復同維持基礎代謝嘅關鍵！\n\n• **每日建議攝取量**：體重 (kg) × 1.2 ~ 1.6 克\n• **優質來源**：雞胸肉、雞蛋、豆腐、三文魚、無糖豆漿。\n• **貼心提醒**：分開每餐平均攝取，吸收效果最好！`;
+            }
+
+            if (q.includes('運動') || q.includes('跑步') || q.includes('健身') || q.includes('exercise')) {
+                return `運動唔單止可以燃燒卡路里，仲可以提升心情同代謝率！\n\n• **有氧運動**（如跑步、跳繩）：快速增加熱量消耗。\n• **力量訓練**（如深蹲、俯臥撑）：增加肌肉量，提高基礎代謝率。\n記得做完運動後 30 分鐘內補充適量蛋白質同碳水化合物！`;
+            }
+
+            return `收到您嘅問題！小編建議您：\n\n• 您今日的目標熱量為 **${targetCal} kcal**，目前已攝取 **${totalCal} kcal**。\n• 均衡飲食（適量蛋白質、豐富膳食纖維、優質油脂）加上規律作息係維持健康的關鍵。\n\n如果有具體的食材或運動項目想評估，隨時告訴小編！`;
         }
 
         async function sendChatMessage() {
@@ -1447,22 +1363,37 @@
             const user = getCurrentUserData();
             const dayLogs = user?.logs[selectedDate] || { food: [], exercise: [] };
             let totalCal = 0;
-            dayLogs.food.forEach(f => totalCal += f.calories);
-
-            const systemPrompt = `你叫「小編」，是 FitSecret 的專業廣東話/中文智能健康與營養師 AI。用家現時身高 ${user?.profile?.height||170}cm, 體重 ${user?.profile?.weight||65}kg, 每日目標卡路里為 ${user?.profile?.targetCal||2000} kcal。今日已攝取 ${totalCal} kcal。請用親切、專業、鼓勵性的口吻 (配合香港地區習慣) 解答用家的健康問題或提供餐點運動建議。`;
-
-            const payload = {
-                contents: [{ parts: [{ text: text }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] }
-            };
-
-            try {
-                const result = await fetchGeminiAPI(payload);
-                const reply = result.candidates?.[0]?.content?.parts?.[0]?.text || "不好意思，小編暫時思考中，請稍後再試！";
-                appendChatMessage('ai', reply);
-            } catch (err) {
-                appendChatMessage('ai', "連線錯誤，請稍後再試。");
+            if (dayLogs.food) {
+                dayLogs.food.forEach(f => totalCal += f.calories);
             }
+
+            const loadingId = 'typing-' + Date.now();
+            appendChatTypingIndicator(loadingId);
+
+            let reply = "";
+
+            if (typeof apiKey !== 'undefined' && apiKey && apiKey.trim() !== "") {
+                const systemPrompt = `你叫「小編」，是 FitSecret 的專業廣東話/中文智能健康與營養師 AI。用家現時身高 ${user?.profile?.height||170}cm, 體重 ${user?.profile?.weight||65}kg, 每日目標卡路里為 ${user?.profile?.targetCal||2000} kcal。今日已攝取 ${totalCal} kcal。請用親切、專業、鼓勵性的口吻 (配合香港地區習慣) 解答用家的健康問題或提供餐點運動建議。`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: text }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                };
+
+                try {
+                    const result = await fetchGeminiAPI(payload, 8000);
+                    reply = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                } catch (err) {
+                    console.warn("API call failed, falling back to local smart assistant", err);
+                }
+            }
+
+            if (!reply) {
+                reply = generateFallbackChatReply(text, user, totalCal);
+            }
+
+            removeChatTypingIndicator(loadingId);
+            appendChatMessage('ai', reply);
         }
 
         function toggleLanguage() {
