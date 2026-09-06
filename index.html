@@ -2,8 +2,8 @@
 <html lang="zh-HK" class="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitSecret - 卡路里與健康管理助理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>FitSecret - 手機卡路里與健康助理</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -32,100 +32,123 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* Mobile-optimized smooth scroll & layout */
+        html, body {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+            width: 100%;
+        }
         .glass-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
         .dark .glass-card {
-            background: rgba(30, 27, 75, 0.85);
-            backdrop-filter: blur(12px);
+            background: rgba(30, 27, 75, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
-        /* Custom Scrollbar */
+        /* Custom Mobile Scrollbars */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 4px;
+            height: 4px;
         }
         ::-webkit-scrollbar-track {
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
             background: #c4b5fd;
-            border-radius: 3px;
+            border-radius: 999px;
         }
         .dark ::-webkit-scrollbar-thumb {
             background: #4c1d95;
         }
+        /* Pulse Animation for Auto-estimating state */
+        @keyframes subtlePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-subtle {
+            animation: subtlePulse 1.2s infinite ease-in-out;
+        }
     </style>
 </head>
-<body class="bg-purple-50/50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen transition-colors duration-300 font-sans">
+<body class="bg-purple-50/60 dark:bg-gray-950 text-gray-800 dark:text-gray-100 min-h-screen font-sans selection:bg-purple-200 antialiased">
 
     <!-- Global API Key Config -->
     <script>
-        const apiKey = ""; // Gemini API key provided at runtime
+        const apiKey = ""; // Gemini API key injected at runtime
     </script>
 
-    <div id="app" class="max-w-md mx-auto sm:max-w-2xl md:max-w-4xl min-h-screen pb-20 relative shadow-2xl bg-gradient-to-br from-purple-50 via-white to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-purple-950">
+    <div id="app" class="w-full max-w-md sm:max-w-xl mx-auto min-h-screen pb-20 relative shadow-2xl bg-gradient-to-b from-purple-50/80 via-white to-purple-100/60 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950/40">
 
-        <!-- Top Navigation Bar -->
-        <header class="sticky top-0 z-30 glass-card border-b border-purple-100 dark:border-purple-900/50 px-4 py-3 flex justify-between items-center transition-all">
+        <!-- Top Mobile Navigation Bar -->
+        <header class="sticky top-0 z-30 glass-card border-b border-purple-100/80 dark:border-purple-900/50 px-3.5 py-3 flex justify-between items-center transition-all">
             <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-purple-500/30">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white font-black text-lg shadow-md shadow-purple-500/20">
                     F
                 </div>
-                <span class="text-xl font-black bg-gradient-to-r from-purple-700 to-indigo-600 dark:from-purple-400 dark:to-indigo-300 bg-clip-text text-transparent">FitSecret</span>
+                <div>
+                    <span class="text-lg font-black bg-gradient-to-r from-purple-700 to-indigo-600 dark:from-purple-400 dark:to-indigo-300 bg-clip-text text-transparent block leading-none">FitSecret</span>
+                    <span class="text-[10px] text-purple-600 dark:text-purple-400 font-semibold tracking-wider">MOBILE AI</span>
+                </div>
             </div>
             
-            <div class="flex items-center gap-2.5">
+            <div class="flex items-center gap-1.5">
                 <!-- Date Picker -->
-                <input type="date" id="datePicker" class="hidden text-xs bg-purple-100 dark:bg-purple-900/50 text-purple-900 dark:text-purple-200 rounded-lg px-2 py-1.5 border border-purple-300 dark:border-purple-700 focus:outline-none">
+                <input type="date" id="datePicker" class="hidden text-xs bg-purple-100/80 dark:bg-purple-900/50 text-purple-900 dark:text-purple-200 rounded-lg px-2 py-1.5 border border-purple-200 dark:border-purple-700 focus:outline-none">
 
                 <!-- Language Toggle -->
-                <button id="langBtn" onclick="toggleLanguage()" class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 hover:bg-purple-200 transition-all text-xs font-semibold">
+                <button id="langBtn" onclick="toggleLanguage()" class="px-2.5 py-1.5 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 hover:bg-purple-200 active:scale-95 transition text-xs font-bold">
                     EN
                 </button>
 
                 <!-- Dark Mode Toggle -->
-                <button id="themeBtn" onclick="toggleTheme()" class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 hover:bg-purple-200 transition-all">
+                <button id="themeBtn" onclick="toggleTheme()" class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 hover:bg-purple-200 active:scale-95 transition">
                     <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
                     <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
                 </button>
 
                 <!-- Logout Button -->
-                <button id="logoutBtn" onclick="logout()" class="hidden p-2 rounded-lg bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300 hover:bg-red-200 transition-all">
+                <button id="logoutBtn" onclick="logout()" class="hidden p-2 rounded-lg bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300 hover:bg-red-200 active:scale-95 transition">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
                 </button>
             </div>
         </header>
 
-        <!-- Main Content Area -->
-        <main class="p-4 md:p-6 space-y-5">
+        <main class="p-3.5 sm:p-5 space-y-4">
 
-            <!-- 1. Authentication View (Login / Register) -->
-            <section id="authView" class="space-y-6">
-                <div class="text-center space-y-2 mt-6">
-                    <h1 class="text-3xl font-extrabold text-purple-900 dark:text-purple-100" data-i18n="welcomeTitle">歡迎使用 FitSecret</h1>
-                    <p class="text-sm text-purple-600 dark:text-purple-300" data-i18n="welcomeSub">您專屬的智能卡路里與健康 AI 助理</p>
+            <!-- 1. Authentication View -->
+            <section id="authView" class="space-y-5 pt-4">
+                <div class="text-center space-y-1.5">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 mx-auto flex items-center justify-center text-white text-3xl font-black shadow-xl shadow-purple-500/30">
+                        F
+                    </div>
+                    <h1 class="text-2xl font-black text-purple-900 dark:text-purple-100 pt-2" data-i18n="welcomeTitle">歡迎使用 FitSecret</h1>
+                    <p class="text-xs text-purple-600 dark:text-purple-300 px-4" data-i18n="welcomeSub">您專屬的手機卡路里與健康 AI 助理</p>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl border border-purple-100 dark:border-purple-900/50 max-w-sm mx-auto transition-all">
-                    <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
-                        <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 pb-3 text-center font-bold text-purple-600 border-b-2 border-purple-600 dark:text-purple-400 dark:border-purple-400" data-i18n="login">登入</button>
-                        <button id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 pb-3 text-center font-medium text-gray-400 border-b-2 border-transparent" data-i18n="register">註冊新帳號</button>
+                <div class="bg-white/90 dark:bg-gray-800/90 p-5 rounded-2xl shadow-xl border border-purple-100 dark:border-purple-900/50 transition-all">
+                    <div class="flex border-b border-gray-200 dark:border-gray-700 mb-5">
+                        <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 pb-3 text-center font-bold text-sm text-purple-600 border-b-2 border-purple-600 dark:text-purple-400 dark:border-purple-400" data-i18n="login">登入</button>
+                        <button id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 pb-3 text-center font-medium text-sm text-gray-400 border-b-2 border-transparent" data-i18n="register">註冊新帳號</button>
                     </div>
 
-                    <form id="authForm" onsubmit="handleAuth(event)" class="space-y-4">
+                    <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3.5">
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="username">使用者名稱 (Username)</label>
-                            <input type="text" id="authUsername" required placeholder="例如：hk_fitness" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none transition">
+                            <input type="text" id="authUsername" required placeholder="例如：hk_fitness" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/60 focus:ring-2 focus:ring-purple-500 outline-none transition">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="password">密碼 (最少 8 位字元)</label>
-                            <input type="password" id="authPassword" required minlength="8" placeholder="••••••••" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none transition">
+                            <input type="password" id="authPassword" required minlength="8" placeholder="••••••••" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/60 focus:ring-2 focus:ring-purple-500 outline-none transition">
                         </div>
 
-                        <div id="authError" class="hidden text-xs text-red-500 font-medium"></div>
+                        <div id="authError" class="hidden text-xs text-red-500 font-medium bg-red-50 dark:bg-red-950/40 p-2 rounded-lg border border-red-200 dark:border-red-800"></div>
 
-                        <button type="submit" id="authSubmitBtn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-purple-500/30 transition transform active:scale-95" data-i18n="loginBtn">
+                        <button type="submit" id="authSubmitBtn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-purple-500/30 transition active:scale-95" data-i18n="loginBtn">
                             登入
                         </button>
                     </form>
@@ -133,13 +156,13 @@
             </section>
 
             <!-- 2. Profile Setup Modal/View -->
-            <section id="profileSetupView" class="hidden space-y-6">
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl border border-purple-100 dark:border-purple-900 max-w-md mx-auto">
-                    <h2 class="text-xl font-bold text-purple-900 dark:text-purple-100 mb-2" data-i18n="setupTitle">建立個人健康檔案</h2>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-6" data-i18n="setupSub">請填寫基本資料，為您計算每日建議攝取熱量</p>
+            <section id="profileSetupView" class="hidden space-y-4">
+                <div class="bg-white/95 dark:bg-gray-800/95 p-5 rounded-2xl shadow-xl border border-purple-100 dark:border-purple-900">
+                    <h2 class="text-lg font-extrabold text-purple-900 dark:text-purple-100 mb-1" data-i18n="setupTitle">建立個人健康檔案</h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-4" data-i18n="setupSub">請填寫基本資料，為您計算每日建議攝取熱量</p>
 
-                    <form onsubmit="saveProfile(event)" class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
+                    <form onsubmit="saveProfile(event)" class="space-y-3.5">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="age">年齡</label>
                                 <input type="number" id="userAge" required min="10" max="100" value="25" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
@@ -153,7 +176,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="height">身高 (cm)</label>
                                 <input type="number" id="userHeight" required min="100" max="230" value="170" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
@@ -174,148 +197,146 @@
                             </select>
                         </div>
 
-                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-purple-500/30 hover:opacity-95 transition" data-i18n="saveBtn">
+                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-purple-500/30 hover:opacity-95 transition active:scale-95" data-i18n="saveBtn">
                             儲存並進入主頁
                         </button>
                     </form>
                 </div>
             </section>
 
-            <!-- 3. Main Dashboard View -->
-            <section id="dashboardView" class="hidden space-y-4">
+            <!-- 3. Main Mobile Dashboard View -->
+            <section id="dashboardView" class="hidden space-y-3.5">
 
-                <!-- User Profile Target Header Card (Style Ref) -->
-                <div class="glass-card p-4 rounded-2xl shadow border border-purple-100 dark:border-purple-900/50 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">
-                            <i data-lucide="user" class="w-5 h-5"></i>
+                <!-- User Profile Target Header Card -->
+                <div class="glass-card p-3.5 rounded-2xl shadow-sm border border-purple-100 dark:border-purple-900/50 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold flex-shrink-0">
+                            <i data-lucide="user" class="w-4 h-4"></i>
                         </div>
-                        <div>
-                            <span class="text-xs text-gray-500 dark:text-gray-400 block font-medium" data-i18n="targetHeaderTitle">個人目標數據</span>
-                            <div class="text-sm font-extrabold text-gray-900 dark:text-gray-100">
-                                <span data-i18n="targetTag">目標：</span><span id="headerTargetCal">1850</span> kcal 
-                                <span class="text-gray-300 dark:text-gray-600 mx-1">|</span> 
+                        <div class="leading-tight">
+                            <span class="text-[10px] text-gray-500 dark:text-gray-400 font-medium block" data-i18n="targetHeaderTitle">個人目標數據</span>
+                            <div class="text-xs font-black text-gray-900 dark:text-gray-100 flex items-center gap-1 flex-wrap">
+                                <span><span data-i18n="targetTag">目標:</span> <span id="headerTargetCal">1850</span> kcal</span>
+                                <span class="text-gray-300 dark:text-gray-600">|</span> 
                                 <span>BMI <span id="headerBMI">21.3</span></span> 
-                                <span id="headerBMIBadge" class="text-xs font-normal text-purple-600 dark:text-purple-300">(標準)</span>
+                                <span id="headerBMIBadge" class="text-[11px] font-semibold text-purple-600 dark:text-purple-300">(標準)</span>
                             </div>
                         </div>
                     </div>
-                    <button onclick="editProfile()" class="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-0.5">
-                        <span data-i18n="settings">設定</span> <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    <button onclick="editProfile()" class="px-2.5 py-1 text-xs font-bold text-purple-700 dark:text-purple-300 bg-purple-100/80 dark:bg-purple-900/40 rounded-lg hover:bg-purple-200 transition flex items-center gap-0.5 flex-shrink-0">
+                        <span data-i18n="settings">修改</span> <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
                     </button>
                 </div>
 
-                <!-- Main Calorie Progress Card (Matches uploaded image layout) -->
-                <div class="glass-card p-5 rounded-3xl shadow-xl border border-purple-100 dark:border-purple-900/50 space-y-6">
+                <!-- Main Calorie Progress Card (Compact Mobile Grid) -->
+                <div class="glass-card p-4 rounded-2xl shadow-lg border border-purple-100 dark:border-purple-900/50 space-y-4">
                     
                     <!-- Top Ring Gauge & Remaining Display -->
-                    <div class="flex items-center justify-around gap-2 pt-2">
+                    <div class="flex items-center justify-between gap-2">
                         <!-- Left: Circular Gauge Indicator -->
-                        <div class="relative w-32 h-32 flex items-center justify-center">
+                        <div class="relative w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center flex-shrink-0">
                             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                <!-- Background Circle -->
                                 <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" class="text-purple-100 dark:text-purple-950" fill="transparent"></circle>
-                                <!-- Progress Circle -->
                                 <circle id="svgCircleProgress" cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" class="text-purple-600 dark:text-purple-400 transition-all duration-700" fill="transparent"></circle>
                             </svg>
                             <div class="absolute text-center">
-                                <span id="textConsumedBig" class="text-2xl font-black text-gray-900 dark:text-gray-100 block leading-none">0</span>
-                                <span id="textTargetCalSmall" class="text-[10px] font-semibold text-gray-400 dark:text-gray-500 block mt-1">/ 1850 kcal</span>
+                                <span id="textConsumedBig" class="text-xl sm:text-2xl font-black text-gray-900 dark:text-gray-100 block leading-none">0</span>
+                                <span id="textTargetCalSmall" class="text-[9px] sm:text-[10px] font-semibold text-gray-400 dark:text-gray-500 block mt-1">/ 1850 kcal</span>
                             </div>
                         </div>
 
                         <!-- Right: Remaining Calorie Details -->
-                        <div class="space-y-1.5 flex-1 pl-4">
-                            <span class="text-xs font-semibold text-gray-400 dark:text-gray-400 block" data-i18n="remainingBudget">剩餘熱量配額</span>
-                            <div id="textRemainingBig" class="text-4xl font-black text-purple-600 dark:text-purple-400 tracking-tight">1850</div>
+                        <div class="space-y-1 flex-1 pl-2">
+                            <span class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 block" data-i18n="remainingBudget">剩餘熱量配額</span>
+                            <div id="textRemainingBig" class="text-3xl sm:text-4xl font-black text-purple-600 dark:text-purple-400 tracking-tight leading-none py-0.5">1850</div>
                             
-                            <div class="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-300 font-medium pt-1">
-                                <span class="flex items-center gap-1">
+                            <div class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300 font-medium pt-1">
+                                <span class="flex items-center gap-0.5">
                                     <span class="text-xs">🍽️</span> <span data-i18n="consumedText">攝取</span> <span id="valConsumedText" class="font-bold text-purple-700 dark:text-purple-300">0</span>
                                 </span>
                                 <!-- Clickable Exercise Burned Button -->
-                                <button onclick="openExerciseListModal()" class="flex items-center gap-1 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 px-1.5 py-0.5 rounded transition">
+                                <button onclick="openExerciseListModal()" class="flex items-center gap-0.5 bg-emerald-50/80 dark:bg-emerald-950/50 hover:bg-emerald-100 border border-emerald-200/60 dark:border-emerald-800/60 px-1.5 py-0.5 rounded-lg transition active:scale-95">
                                     <span class="text-xs">⚡</span> <span data-i18n="burnedText">消耗</span> <span id="valBurnedText" class="font-bold text-emerald-600 dark:text-emerald-400">0</span>
                                     <i data-lucide="chevron-right" class="w-3 h-3 text-emerald-500"></i>
                                 </button>
                             </div>
 
                             <!-- Mini Bar -->
-                            <div class="w-full h-2 bg-purple-100 dark:bg-purple-900/40 rounded-full overflow-hidden mt-2">
+                            <div class="w-full h-2 bg-purple-100 dark:bg-purple-900/40 rounded-full overflow-hidden mt-1.5">
                                 <div id="topProgressBar" class="h-full bg-purple-600 dark:bg-purple-400 transition-all duration-500" style="width: 0%"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Bottom Macro Cards Grid (Matches uploaded image styling) -->
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 rounded-2xl p-3 text-center">
-                            <span class="text-xs text-gray-500 dark:text-gray-400 block mb-1 font-medium" data-i18n="protein">蛋白質</span>
-                            <span id="macroProtein" class="text-base font-black text-blue-600 dark:text-blue-400">0.0g</span>
+                    <!-- Macro Cards Grid -->
+                    <div class="grid grid-cols-3 gap-2 pt-1">
+                        <div class="bg-blue-50/80 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 rounded-xl p-2 text-center">
+                            <span class="text-[10px] text-gray-500 dark:text-gray-400 block font-medium" data-i18n="protein">蛋白質</span>
+                            <span id="macroProtein" class="text-sm font-black text-blue-600 dark:text-blue-400">0.0g</span>
                         </div>
-                        <div class="bg-amber-50/70 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40 rounded-2xl p-3 text-center">
-                            <span class="text-xs text-gray-500 dark:text-gray-400 block mb-1 font-medium" data-i18n="carbs">碳水化合物</span>
-                            <span id="macroCarbs" class="text-base font-black text-amber-600 dark:text-amber-400">0.0g</span>
+                        <div class="bg-amber-50/80 dark:bg-amber-950/40 border border-amber-100 dark:border-amber-900/50 rounded-xl p-2 text-center">
+                            <span class="text-[10px] text-gray-500 dark:text-gray-400 block font-medium" data-i18n="carbs">碳水化合物</span>
+                            <span id="macroCarbs" class="text-sm font-black text-amber-600 dark:text-amber-400">0.0g</span>
                         </div>
-                        <div class="bg-rose-50/70 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/40 rounded-2xl p-3 text-center">
-                            <span class="text-xs text-gray-500 dark:text-gray-400 block mb-1 font-medium" data-i18n="fat">脂肪</span>
-                            <span id="macroFat" class="text-base font-black text-rose-600 dark:text-rose-400">0.0g</span>
+                        <div class="bg-rose-50/80 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/50 rounded-xl p-2 text-center">
+                            <span class="text-[10px] text-gray-500 dark:text-gray-400 block font-medium" data-i18n="fat">脂肪</span>
+                            <span id="macroFat" class="text-sm font-black text-rose-600 dark:text-rose-400">0.0g</span>
                         </div>
                     </div>
 
-                    <!-- Meals & Exercise AI Suggestions Section (Moved up here) -->
-                    <div class="bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 text-white p-4.5 rounded-2xl shadow-lg space-y-3">
+                    <!-- AI Health Advice Card -->
+                    <div class="bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 text-white p-3.5 rounded-xl shadow-md space-y-2">
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="px-2 py-0.5 rounded bg-purple-400/30 text-purple-200 text-[10px] font-bold">AI HEALTH ADVICE</span>
-                                <h4 class="font-extrabold text-sm" data-i18n="dietTipTitle">每日熱量與運動 AI 建議</h4>
+                            <div class="flex items-center gap-1.5">
+                                <span class="px-1.5 py-0.5 rounded bg-purple-400/30 text-purple-100 text-[9px] font-black tracking-wider">AI ADVICE</span>
+                                <h4 class="font-extrabold text-xs" data-i18n="dietTipTitle">每日熱量與運動 AI 建議</h4>
                             </div>
-                            <button onclick="openAIChatModal()" class="px-3 py-1.5 bg-white text-purple-800 font-bold text-xs rounded-xl shadow hover:bg-purple-50 transition flex items-center gap-1">
+                            <button onclick="openAIChatModal()" class="px-2.5 py-1 bg-white text-purple-900 font-bold text-[11px] rounded-lg shadow hover:bg-purple-50 transition active:scale-95 flex items-center gap-1">
                                 <i data-lucide="message-square" class="w-3.5 h-3.5 text-purple-600"></i>
                                 <span data-i18n="chatWithEditor">對話小編</span>
                             </button>
                         </div>
-                        <p id="suggestionText" class="text-xs text-purple-100 leading-relaxed">
+                        <p id="suggestionText" class="text-[11px] text-purple-100 leading-snug">
                             您還有充裕的卡路里額度，建議補充優質蛋白質（如雞胸肉、豆腐）與新鮮蔬菜！
                         </p>
                     </div>
 
                 </div>
 
-                <!-- Add Food & Exercise Action Buttons -->
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="openModal('foodModal')" class="p-4 bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-2xl shadow-lg shadow-purple-500/20 hover:scale-[1.02] active:scale-95 transition flex flex-col items-center justify-center gap-2">
-                        <i data-lucide="camera" class="w-6 h-6"></i>
-                        <span class="font-bold text-sm" data-i18n="addFoodBtn">+ 記錄飲食 (相機/手動)</span>
+                <!-- Action Buttons: Log Food / Log Exercise -->
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button onclick="openModal('foodModal')" class="p-3.5 bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-2xl shadow-md shadow-purple-500/20 active:scale-95 transition flex items-center justify-center gap-2">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                        <span class="font-bold text-xs sm:text-sm" data-i18n="addFoodBtn">+ 記錄飲食 (拍照/相簿/手動)</span>
                     </button>
-                    <button onclick="openModal('exerciseModal')" class="p-4 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-2xl shadow-lg shadow-indigo-500/20 hover:scale-[1.02] active:scale-95 transition flex flex-col items-center justify-center gap-2">
-                        <i data-lucide="activity" class="w-6 h-6"></i>
-                        <span class="font-bold text-sm" data-i18n="addExerciseBtn">+ 記錄運動</span>
+                    <button onclick="openModal('exerciseModal')" class="p-3.5 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-2xl shadow-md shadow-indigo-500/20 active:scale-95 transition flex items-center justify-center gap-2">
+                        <i data-lucide="activity" class="w-5 h-5"></i>
+                        <span class="font-bold text-xs sm:text-sm" data-i18n="addExerciseBtn">+ 記錄運動</span>
                     </button>
                 </div>
 
-                <!-- Favorites Quick Pick -->
-                <div class="glass-card p-4 rounded-2xl shadow-md border border-purple-100 dark:border-purple-800/40 space-y-3">
+                <!-- Favorites Quick Pick Bar -->
+                <div class="glass-card p-3.5 rounded-2xl shadow-sm border border-purple-100 dark:border-purple-800/40 space-y-2">
                     <div class="flex items-center justify-between">
                         <h4 class="font-bold text-xs uppercase text-purple-800 dark:text-purple-300 flex items-center gap-1.5">
-                            <i data-lucide="star" class="w-4 h-4 text-amber-500 fill-amber-500"></i>
+                            <i data-lucide="star" class="w-3.5 h-3.5 text-amber-500 fill-amber-500"></i>
                             <span data-i18n="favoritesTitle">我的最愛食物 (點擊快速補登)</span>
                         </h4>
                     </div>
-                    <div id="favoritesList" class="flex gap-2 overflow-x-auto pb-1 text-xs">
-                        <span class="text-gray-400 italic" data-i18n="noFavorites">暫無最愛食物，在飲食紀錄中點擊星號即可加入。</span>
+                    <div id="favoritesList" class="flex gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
+                        <span class="text-gray-400 italic text-[11px]" data-i18n="noFavorites">暫無最愛食物，在飲食紀錄中點擊星號即可加入。</span>
                     </div>
                 </div>
 
-                <!-- Daily Food & Exercise Log List -->
-                <div class="glass-card p-5 rounded-2xl shadow-md border border-purple-100 dark:border-purple-800/40 space-y-4">
-                    <h3 class="font-bold text-gray-800 dark:text-gray-100 text-base flex items-center gap-2">
-                        <i data-lucide="list" class="w-5 h-5 text-purple-600"></i>
+                <!-- Daily Log Items -->
+                <div class="glass-card p-4 rounded-2xl shadow-sm border border-purple-100 dark:border-purple-800/40 space-y-3">
+                    <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm flex items-center gap-1.5">
+                        <i data-lucide="list" class="w-4 h-4 text-purple-600"></i>
                         <span data-i18n="dailyLogs">當日明細紀錄</span>
                     </h3>
 
-                    <div id="logsContainer" class="space-y-2.5">
-                        <div class="text-center py-8 text-gray-400 text-xs" data-i18n="noLogs">
+                    <div id="logsContainer" class="space-y-2">
+                        <div class="text-center py-6 text-gray-400 text-xs" data-i18n="noLogs">
                             今天尚未有任何飲食或運動記錄。
                         </div>
                     </div>
@@ -326,84 +347,99 @@
 
         <!-- ================= MODALS ================= -->
 
-        <!-- 1. Add Food Modal -->
-        <div id="foodModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 overflow-hidden flex flex-col max-h-[90vh]">
-                <div class="p-4 bg-purple-600 text-white flex justify-between items-center">
-                    <h3 class="font-bold text-base flex items-center gap-2">
-                        <i data-lucide="utensils" class="w-5 h-5"></i>
+        <!-- 1. Add Food Modal (Camera Photo / Album Upload / Auto-Nutrition on Typing) -->
+        <div id="foodModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 overflow-hidden flex flex-col max-h-[92vh]">
+                
+                <!-- Modal Header -->
+                <div class="p-3.5 bg-purple-600 text-white flex justify-between items-center">
+                    <h3 class="font-bold text-sm flex items-center gap-2">
+                        <i data-lucide="utensils" class="w-4 h-4"></i>
                         <span data-i18n="addFoodHeader">新增飲食紀錄</span>
                     </h3>
-                    <button onclick="closeModal('foodModal')" class="hover:opacity-75">
+                    <button onclick="closeModal('foodModal')" class="p-1 hover:opacity-75">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
 
-                <div class="p-5 overflow-y-auto space-y-4">
-                    <!-- AI Camera Recognition Section -->
-                    <div class="bg-purple-50 dark:bg-purple-950/50 p-4 rounded-xl border border-purple-200 dark:border-purple-800 text-center space-y-3">
-                        <h4 class="font-bold text-xs text-purple-900 dark:text-purple-200" data-i18n="aiCamTitle">AI 相機即時辨識食物</h4>
-                        <p class="text-[11px] text-gray-500 dark:text-gray-400" data-i18n="aiCamDesc">拍下照片或上傳食物圖片，自動識別熱量與營養成分</p>
+                <div class="p-4 overflow-y-auto space-y-3.5">
+                    <!-- Photo Options: Camera VS Album Selection -->
+                    <div class="bg-purple-50 dark:bg-purple-950/50 p-3.5 rounded-2xl border border-purple-200 dark:border-purple-800/80 text-center space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-xs text-purple-900 dark:text-purple-200 flex items-center gap-1">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-500"></i>
+                                <span data-i18n="aiCamTitle">AI 智能圖片辨識食物 (5秒內自動分析)</span>
+                            </h4>
+                        </div>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400 text-left" data-i18n="aiCamDesc">拍照或從相簿選擇食物圖片，系統將自動提取卡路里與營養！</p>
                         
+                        <!-- Hidden Inputs for Camera and Album Gallery -->
                         <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageUpload(event)">
+                        <input type="file" id="galleryInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
                         
-                        <button onclick="document.getElementById('cameraInput').click()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow">
-                            <i data-lucide="camera" class="w-4 h-4"></i>
-                            <span data-i18n="takePhotoBtn">開啟相機 / 拍照</span>
-                        </button>
+                        <!-- Dual Upload Buttons for Mobile -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="document.getElementById('cameraInput').click()" class="py-2.5 px-2 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+                                <i data-lucide="camera" class="w-4 h-4"></i>
+                                <span data-i18n="takePhotoBtn">📷 即時拍照</span>
+                            </button>
+                            <button onclick="document.getElementById('galleryInput').click()" class="py-2.5 px-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+                                <i data-lucide="image" class="w-4 h-4"></i>
+                                <span data-i18n="uploadAlbumBtn">🖼️ 手機相簿</span>
+                            </button>
+                        </div>
 
-                        <div id="imagePreviewContainer" class="hidden relative rounded-xl overflow-hidden max-h-48 bg-black">
-                            <img id="foodPreviewImg" class="w-full object-cover">
-                            <div id="aiAnalyzingSpinner" class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white text-xs gap-2">
-                                <div class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                <span data-i18n="analyzing">AI 分析食物中...</span>
+                        <!-- Image Preview & AI Analyzing Status Box -->
+                        <div id="imagePreviewContainer" class="hidden relative rounded-xl overflow-hidden max-h-40 bg-black mt-2">
+                            <img id="foodPreviewImg" class="w-full h-full object-cover">
+                            <div id="aiAnalyzingSpinner" class="absolute inset-0 bg-black/65 backdrop-blur-xs flex flex-col items-center justify-center text-white text-xs gap-2">
+                                <div class="w-7 h-7 border-3 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+                                <span id="aiAnalyzingText" class="font-bold text-xs" data-i18n="analyzing">AI 智能辨識中 (上限5秒)...</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="relative flex py-1 items-center">
+                    <div class="relative flex py-0.5 items-center">
                         <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
-                        <span class="flex-shrink mx-3 text-xs text-gray-400" data-i18n="orManual">或 手動輸入 / 修正</span>
+                        <span class="flex-shrink mx-3 text-[11px] text-gray-400 font-medium" data-i18n="orManual">或 手動輸入食物名稱 (自動生成營養)</span>
                         <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
                     </div>
 
-                    <!-- Manual Input Form -->
+                    <!-- Food Input Form (Live Auto Estimator triggered on typing) -->
                     <form id="foodForm" onsubmit="submitFoodLog(event)" class="space-y-3">
                         <div>
                             <div class="flex justify-between items-center mb-1">
-                                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300" data-i18n="foodName">食物/飲品名稱</label>
-                                <button type="button" onclick="resetFoodForm()" id="notThisFoodBtn" class="hidden text-[11px] text-purple-600 dark:text-purple-400 underline font-medium" data-i18n="notThisFood">「我唔係食呢個」手動修正</button>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-200" data-i18n="foodName">食物 / 飲品名稱</label>
+                                <span id="autoCalcStatus" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hidden flex items-center gap-1">
+                                    <i data-lucide="refresh-cw" class="w-3 h-3 animate-spin"></i> 自動估算中...
+                                </span>
                             </div>
-                            <input type="text" id="foodName" required placeholder="例如：港式西多士" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
+                            <input type="text" id="foodName" required placeholder="輸入食物名稱 (如：干炒牛河 / 雞胸肉餐盒)" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none transition">
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-2 gap-2.5">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="calories">卡路里 (kcal)</label>
-                                <input type="number" id="foodCal" required min="0" placeholder="450" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
+                                <label class="block text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="calories">卡路里 (kcal)</label>
+                                <input type="number" id="foodCal" required min="0" placeholder="0" class="w-full px-3 py-2 text-sm font-bold text-purple-700 dark:text-purple-300 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="proteinG">蛋白質 (g)</label>
-                                <input type="number" id="foodProtein" min="0" step="0.1" placeholder="10" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="carbsG">碳水化合物 (g)</label>
-                                <input type="number" id="foodCarbs" min="0" step="0.1" placeholder="50" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="fatG">脂肪 (g)</label>
-                                <input type="number" id="foodFat" min="0" step="0.1" placeholder="20" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
+                                <label class="block text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="proteinG">蛋白質 (g)</label>
+                                <input type="number" id="foodProtein" min="0" step="0.1" placeholder="0" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
                             </div>
                         </div>
 
-                        <button type="button" onclick="autoEstimateNutrition()" class="w-full py-2 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 text-xs font-bold rounded-xl hover:bg-purple-200 transition" data-i18n="autoEstimate">
-                            ✨ 輸入名稱自動估算營養
-                        </button>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="carbsG">碳水化合物 (g)</label>
+                                <input type="number" id="foodCarbs" min="0" step="0.1" placeholder="0" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="fatG">脂肪 (g)</label>
+                                <input type="number" id="foodFat" min="0" step="0.1" placeholder="0" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
+                            </div>
+                        </div>
 
-                        <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm rounded-xl shadow-lg transition" data-i18n="addLogBtn">
+                        <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold text-sm rounded-xl shadow-lg shadow-purple-500/20 transition mt-1" data-i18n="addLogBtn">
                             加入飲食紀錄
                         </button>
                     </form>
@@ -411,23 +447,39 @@
             </div>
         </div>
 
-        <!-- 2. Add Exercise Modal (Expanded HK Sports) -->
-        <div id="exerciseModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 overflow-hidden">
-                <div class="p-4 bg-indigo-600 text-white flex justify-between items-center">
-                    <h3 class="font-bold text-base flex items-center gap-2">
-                        <i data-lucide="activity" class="w-5 h-5"></i>
+        <!-- 1.5 Unrecognized / Timeout Alert Box Modal -->
+        <div id="unrecognizedModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-xs sm:max-w-sm rounded-2xl p-5 shadow-2xl border border-purple-200 dark:border-purple-800 text-center space-y-3.5 animate-bounce-short">
+                <div class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center text-2xl font-bold">
+                    ⚠️
+                </div>
+                <h3 class="font-bold text-base text-gray-900 dark:text-gray-100" data-i18n="unrecognizedTitle">無法於 5 秒內辨識圖片</h3>
+                <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed" data-i18n="unrecognizedDesc">
+                    未能成功分辨相片中的食物。請直接手動輸入「食物名稱」，AI 將即時為您自動計算卡路里、蛋白質及脂肪！
+                </p>
+                <button onclick="closeUnrecognizedModal()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow transition">
+                    好，前往輸入食物名稱
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. Add Exercise Modal -->
+        <div id="exerciseModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 overflow-hidden">
+                <div class="p-3.5 bg-indigo-600 text-white flex justify-between items-center">
+                    <h3 class="font-bold text-sm flex items-center gap-2">
+                        <i data-lucide="activity" class="w-4 h-4"></i>
                         <span data-i18n="addExerciseHeader">新增運動紀錄</span>
                     </h3>
-                    <button onclick="closeModal('exerciseModal')" class="hover:opacity-75">
+                    <button onclick="closeModal('exerciseModal')" class="p-1 hover:opacity-75">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
 
-                <form onsubmit="submitExerciseLog(event)" class="p-5 space-y-4">
+                <form onsubmit="submitExerciseLog(event)" class="p-4 space-y-3.5">
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="exerciseItem">運動項目</label>
-                        <select id="exerciseName" onchange="calcExerciseCalories()" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <select id="exerciseName" onchange="calcExerciseCalories()" class="w-full px-3 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
                             <option value="跑步 (Running)" data-met="8">跑步 (Running)</option>
                             <option value="快步走 (Brisk Walking)" data-met="3.8">快步走 (Brisk Walking)</option>
                             <option value="單車 (Cycling)" data-met="6">單車 (Cycling)</option>
@@ -450,7 +502,7 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="durationMin">運動時間 (分鐘)</label>
-                        <input type="number" id="exerciseDuration" required min="1" value="30" oninput="calcExerciseCalories()" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <input type="number" id="exerciseDuration" required min="1" value="30" oninput="calcExerciseCalories()" class="w-full px-3 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
                     </div>
 
                     <div class="bg-indigo-50 dark:bg-indigo-950/40 p-3 rounded-xl flex justify-between items-center text-xs text-indigo-900 dark:text-indigo-200">
@@ -458,98 +510,94 @@
                         <span id="calculatedBurn" class="text-base font-black text-indigo-600 dark:text-indigo-400">180 kcal</span>
                     </div>
 
-                    <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-lg transition" data-i18n="addExerciseLogBtn">
+                    <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-sm rounded-xl shadow-lg transition" data-i18n="addExerciseLogBtn">
                         扣減當日熱量並紀錄
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- 3. Exercise Log Detail Modal (When clicking "運動已消耗") -->
-        <div id="exerciseListModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl shadow-2xl border border-emerald-100 dark:border-emerald-800 overflow-hidden">
-                <div class="p-4 bg-emerald-600 text-white flex justify-between items-center">
-                    <h3 class="font-bold text-base flex items-center gap-2">
-                        <i data-lucide="zap" class="w-5 h-5"></i>
+        <!-- 3. Exercise Log Detail Modal -->
+        <div id="exerciseListModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-2xl shadow-2xl border border-emerald-100 dark:border-emerald-800 overflow-hidden">
+                <div class="p-3.5 bg-emerald-600 text-white flex justify-between items-center">
+                    <h3 class="font-bold text-sm flex items-center gap-2">
+                        <i data-lucide="zap" class="w-4 h-4"></i>
                         <span data-i18n="exerciseDetailHeader">當日運動消耗明細</span>
                     </h3>
-                    <button onclick="closeModal('exerciseListModal')" class="hover:opacity-75">
+                    <button onclick="closeModal('exerciseListModal')" class="p-1 hover:opacity-75">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
 
-                <div class="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
-                    <div id="exerciseModalList" class="space-y-2">
-                        <!-- Dynamic Exercise Items -->
-                    </div>
+                <div class="p-4 space-y-3 max-h-[60vh] overflow-y-auto">
+                    <div id="exerciseModalList" class="space-y-2"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 4. Food Photo & Detail Modal -->
-        <div id="foodPhotoModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 overflow-hidden">
-                <div class="p-4 bg-purple-600 text-white flex justify-between items-center">
-                    <h3 id="modalFoodTitle" class="font-bold text-base">食物詳細紀錄</h3>
-                    <button onclick="closeModal('foodPhotoModal')" class="hover:opacity-75">
+        <!-- 4. Food Detail & Image Preview Modal -->
+        <div id="foodPhotoModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-xs sm:max-w-sm rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 overflow-hidden">
+                <div class="p-3.5 bg-purple-600 text-white flex justify-between items-center">
+                    <h3 id="modalFoodTitle" class="font-bold text-sm">食物詳細紀錄</h3>
+                    <button onclick="closeModal('foodPhotoModal')" class="p-1 hover:opacity-75">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
 
-                <div class="p-5 space-y-4">
-                    <div id="modalFoodImageContainer" class="rounded-xl overflow-hidden max-h-60 bg-black flex items-center justify-center">
+                <div class="p-4 space-y-3">
+                    <div id="modalFoodImageContainer" class="rounded-xl overflow-hidden max-h-52 bg-black flex items-center justify-center">
                         <img id="modalFoodImg" class="w-full h-full object-cover">
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 text-xs">
-                        <div class="bg-purple-50 dark:bg-purple-950/40 p-3 rounded-xl border border-purple-100 dark:border-purple-800">
-                            <span class="text-gray-400 block" data-i18n="calories">卡路里</span>
-                            <span id="modalFoodCal" class="text-base font-bold text-purple-700 dark:text-purple-300">0 kcal</span>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-purple-50 dark:bg-purple-950/40 p-2.5 rounded-xl border border-purple-100 dark:border-purple-800">
+                            <span class="text-gray-400 block text-[10px]" data-i18n="calories">卡路里</span>
+                            <span id="modalFoodCal" class="text-sm font-black text-purple-700 dark:text-purple-300">0 kcal</span>
                         </div>
-                        <div class="bg-purple-50 dark:bg-purple-950/40 p-3 rounded-xl border border-purple-100 dark:border-purple-800">
-                            <span class="text-gray-400 block" data-i18n="protein">蛋白質</span>
-                            <span id="modalFoodProtein" class="text-base font-bold text-purple-700 dark:text-purple-300">0g</span>
+                        <div class="bg-purple-50 dark:bg-purple-950/40 p-2.5 rounded-xl border border-purple-100 dark:border-purple-800">
+                            <span class="text-gray-400 block text-[10px]" data-i18n="protein">蛋白質</span>
+                            <span id="modalFoodProtein" class="text-sm font-black text-purple-700 dark:text-purple-300">0g</span>
                         </div>
-                        <div class="bg-purple-50 dark:bg-purple-950/40 p-3 rounded-xl border border-purple-100 dark:border-purple-800">
-                            <span class="text-gray-400 block" data-i18n="carbs">碳水化合物</span>
-                            <span id="modalFoodCarbs" class="text-base font-bold text-purple-700 dark:text-purple-300">0g</span>
+                        <div class="bg-purple-50 dark:bg-purple-950/40 p-2.5 rounded-xl border border-purple-100 dark:border-purple-800">
+                            <span class="text-gray-400 block text-[10px]" data-i18n="carbs">碳水化合物</span>
+                            <span id="modalFoodCarbs" class="text-sm font-black text-purple-700 dark:text-purple-300">0g</span>
                         </div>
-                        <div class="bg-purple-50 dark:bg-purple-950/40 p-3 rounded-xl border border-purple-100 dark:border-purple-800">
-                            <span class="text-gray-400 block" data-i18n="fat">脂肪</span>
-                            <span id="modalFoodFat" class="text-base font-bold text-purple-700 dark:text-purple-300">0g</span>
+                        <div class="bg-purple-50 dark:bg-purple-950/40 p-2.5 rounded-xl border border-purple-100 dark:border-purple-800">
+                            <span class="text-gray-400 block text-[10px]" data-i18n="fat">脂肪</span>
+                            <span id="modalFoodFat" class="text-sm font-black text-purple-700 dark:text-purple-300">0g</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 5. AI Nutritionist Chat Modal -->
-        <div id="aiChatModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-lg rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 overflow-hidden flex flex-col h-[85vh]">
-                <div class="p-4 bg-gradient-to-r from-purple-700 to-indigo-700 text-white flex justify-between items-center">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-lg">
+        <!-- 5. AI Nutritionist Chat Modal ("小編") -->
+        <div id="aiChatModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 overflow-hidden flex flex-col h-[85vh]">
+                <div class="p-3.5 bg-gradient-to-r from-purple-700 to-indigo-700 text-white flex justify-between items-center">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-base">
                             👩‍⚕️
                         </div>
                         <div>
-                            <h3 class="font-bold text-sm">營養師「小編」</h3>
-                            <p class="text-[10px] text-purple-200" data-i18n="aiRole">FitSecret AI 健康飲食與運動顧問</p>
+                            <h3 class="font-bold text-xs sm:text-sm leading-tight">營養師「小編」</h3>
+                            <p class="text-[9px] sm:text-[10px] text-purple-200" data-i18n="aiRole">FitSecret AI 健康飲食與運動顧問</p>
                         </div>
                     </div>
-                    <button onclick="closeModal('aiChatModal')" class="hover:opacity-75">
+                    <button onclick="closeModal('aiChatModal')" class="p-1 hover:opacity-75">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
 
-                <!-- Chat Messages Body -->
-                <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-purple-50/50 dark:bg-gray-900/50">
-                    <!-- Dynamic Messages -->
-                </div>
+                <!-- Messages Area -->
+                <div id="chatMessages" class="flex-1 p-3.5 overflow-y-auto space-y-3 bg-purple-50/40 dark:bg-gray-900/50"></div>
 
-                <!-- Chat Input -->
+                <!-- Input Controls -->
                 <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex gap-2">
-                    <input type="text" id="chatInput" placeholder="詢問關於飲食或運動問題..." onkeypress="if(event.key==='Enter') sendChatMessage()" class="flex-1 px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
-                    <button onclick="sendChatMessage()" class="px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold hover:bg-purple-700 transition">
+                    <input type="text" id="chatInput" placeholder="詢問關於飲食或運動問題..." onkeypress="if(event.key==='Enter') sendChatMessage()" class="flex-1 px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
+                    <button onclick="sendChatMessage()" class="px-3.5 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold hover:bg-purple-700 transition active:scale-95 flex items-center justify-center">
                         <i data-lucide="send" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -564,7 +612,7 @@
         const i18n = {
             'zh-HK': {
                 welcomeTitle: "歡迎使用 FitSecret",
-                welcomeSub: "您專屬的智能卡路里與健康 AI 助理",
+                welcomeSub: "您專屬的手機卡路里與健康 AI 助理",
                 login: "登入",
                 register: "註冊新帳號",
                 username: "使用者名稱 (Username)",
@@ -585,8 +633,8 @@
                 act4: "高強度運動 (每週 6-7 天)",
                 saveBtn: "儲存並進入主頁",
                 targetHeaderTitle: "個人目標數據",
-                targetTag: "目標：",
-                settings: "設定",
+                targetTag: "目標:",
+                settings: "修改",
                 remainingBudget: "剩餘熱量配額",
                 consumedText: "攝取",
                 burnedText: "消耗",
@@ -594,7 +642,7 @@
                 carbs: "碳水化合物",
                 fat: "脂肪",
                 dietTipTitle: "每日熱量與運動 AI 建議",
-                addFoodBtn: "+ 記錄飲食 (相機/手動)",
+                addFoodBtn: "+ 記錄飲食 (拍照/相簿/手動)",
                 addExerciseBtn: "+ 記錄運動",
                 favoritesTitle: "我的最愛食物 (點擊快速補登)",
                 noFavorites: "暫無最愛食物，在飲食紀錄中點擊星號即可加入。",
@@ -602,18 +650,17 @@
                 noLogs: "今天尚未有任何飲食或運動記錄。",
                 chatWithEditor: "對話小編",
                 addFoodHeader: "新增飲食紀錄",
-                aiCamTitle: "AI 相機即時辨識食物",
-                aiCamDesc: "拍下照片或上傳食物圖片，自動識別熱量與營養成分",
-                takePhotoBtn: "開啟相機 / 拍照",
-                analyzing: "AI 分析食物中...",
-                orManual: "或 手動輸入 / 修正",
-                foodName: "食物/飲品名稱",
-                notThisFood: "「我唔係食呢個」手動修正",
+                aiCamTitle: "AI 智能圖片辨識食物 (5秒內自動分析)",
+                aiCamDesc: "拍照或從相簿選擇食物圖片，系統將自動提取卡路里與營養！",
+                takePhotoBtn: "📷 即時拍照",
+                uploadAlbumBtn: "🖼️ 手機相簿",
+                analyzing: "AI 智能辨識中 (上限5秒)...",
+                orManual: "或 手動輸入食物名稱 (自動生成營養)",
+                foodName: "食物 / 飲品名稱",
                 calories: "卡路里 (kcal)",
                 proteinG: "蛋白質 (g)",
                 carbsG: "碳水化合物 (g)",
                 fatG: "脂肪 (g)",
-                autoEstimate: "✨ 輸入名稱自動估算營養",
                 addLogBtn: "加入飲食紀錄",
                 addExerciseHeader: "新增運動紀錄",
                 exerciseItem: "運動項目",
@@ -621,18 +668,20 @@
                 estimatedBurn: "預計消耗熱量：",
                 addExerciseLogBtn: "扣減當日熱量並紀錄",
                 exerciseDetailHeader: "當日運動消耗明細",
-                aiRole: "FitSecret AI 健康飲食與運動顧問"
+                aiRole: "FitSecret AI 健康飲食與運動顧問",
+                unrecognizedTitle: "無法於 5 秒內辨識圖片",
+                unrecognizedDesc: "未能成功分辨相片中的食物。請直接手動輸入「食物名稱」，AI 將即時為您自動計算卡路里、蛋白質及脂肪！"
             },
             'en': {
                 welcomeTitle: "Welcome to FitSecret",
-                welcomeSub: "Your personal smart calorie & health AI assistant",
+                welcomeSub: "Your personal mobile calorie & health AI assistant",
                 login: "Log In",
                 register: "Register",
                 username: "Username",
                 password: "Password (min 8 chars)",
                 loginBtn: "Log In",
                 setupTitle: "Create Health Profile",
-                setupSub: "Enter details to calculate your daily recommended intake",
+                setupSub: "Enter details to calculate daily recommended intake",
                 age: "Age",
                 gender: "Gender",
                 male: "Male",
@@ -646,7 +695,7 @@
                 act4: "Very active (6-7 days/wk)",
                 saveBtn: "Save & Proceed",
                 targetHeaderTitle: "Target Health Profile",
-                targetTag: "Target: ",
+                targetTag: "Target:",
                 settings: "Edit",
                 remainingBudget: "Remaining Calories",
                 consumedText: "Consumed",
@@ -655,7 +704,7 @@
                 carbs: "Carbs",
                 fat: "Fat",
                 dietTipTitle: "Daily Diet & Exercise AI Advice",
-                addFoodBtn: "+ Log Food (Cam/Manual)",
+                addFoodBtn: "+ Log Food (Cam/Album/Manual)",
                 addExerciseBtn: "+ Log Exercise",
                 favoritesTitle: "Favorite Foods (Quick Log)",
                 noFavorites: "No favorites yet. Tap star icon in logs to add.",
@@ -663,18 +712,17 @@
                 noLogs: "No food or exercise logged today.",
                 chatWithEditor: "Chat AI",
                 addFoodHeader: "Add Food Log",
-                aiCamTitle: "AI Camera Food Recognition",
-                aiCamDesc: "Take photo to auto-detect calories & macros",
-                takePhotoBtn: "Open Camera / Take Photo",
-                analyzing: "AI Analyzing food...",
-                orManual: "OR Manual Input / Edit",
+                aiCamTitle: "AI Photo Recognition (5s Limit)",
+                aiCamDesc: "Snap a photo or select from album to auto-detect nutrition!",
+                takePhotoBtn: "📷 Camera",
+                uploadAlbumBtn: "🖼️ Album Photo",
+                analyzing: "AI Analyzing (max 5s)...",
+                orManual: "OR Manual Input (Auto-generates nutrition)",
                 foodName: "Food / Drink Name",
-                notThisFood: "Not this food? Edit manually",
                 calories: "Calories (kcal)",
                 proteinG: "Protein (g)",
                 carbsG: "Carbs (g)",
                 fatG: "Fat (g)",
-                autoEstimate: "✨ Auto Estimate Nutrition by Name",
                 addLogBtn: "Add to Food Log",
                 addExerciseHeader: "Add Exercise Log",
                 exerciseItem: "Exercise Activity",
@@ -682,23 +730,25 @@
                 estimatedBurn: "Estimated Burn:",
                 addExerciseLogBtn: "Deduct Calories & Log",
                 exerciseDetailHeader: "Exercise Burn Logs Today",
-                aiRole: "FitSecret AI Health & Diet Consultant"
+                aiRole: "FitSecret AI Health & Diet Consultant",
+                unrecognizedTitle: "Image Not Recognized in 5s",
+                unrecognizedDesc: "Could not identify food from image. Please manually enter food name below, and AI will auto-generate nutrition details instantly!"
             }
         };
 
-        // --- App State ---
         let currentLang = 'zh-HK';
         let authMode = 'login';
         let currentUser = null;
         let usersData = {};
         let selectedDate = new Date().toISOString().split('T')[0];
         let currentUploadedImageBase64 = null;
+        let foodNameDebounceTimer = null;
 
-        // --- Initialization ---
         window.onload = function() {
             lucide.createIcons();
             loadLocalStorageData();
             initDatePicker();
+            initFoodNameListener();
             checkSession();
         };
 
@@ -711,7 +761,27 @@
             });
         }
 
-        // --- LocalStorage Operations ---
+        // Auto-generate Calories, Protein, Fat as user types food name
+        function initFoodNameListener() {
+            const foodInput = document.getElementById('foodName');
+            foodInput.addEventListener('input', (e) => {
+                const name = e.target.value.trim();
+                clearTimeout(foodNameDebounceTimer);
+                if (!name) {
+                    document.getElementById('autoCalcStatus').classList.add('hidden');
+                    return;
+                }
+                
+                // Show estimating indicator
+                document.getElementById('autoCalcStatus').classList.remove('hidden');
+
+                // Debounce 600ms after user finishes typing
+                foodNameDebounceTimer = setTimeout(() => {
+                    autoEstimateNutrition(name);
+                }, 600);
+            });
+        }
+
         function loadLocalStorageData() {
             const data = localStorage.getItem('fitsecret_users');
             if (data) {
@@ -759,7 +829,6 @@
             }
         }
 
-        // --- Auth Functions ---
         function switchAuthTab(mode) {
             authMode = mode;
             const tabLogin = document.getElementById('tabLogin');
@@ -769,12 +838,12 @@
             errDiv.classList.add('hidden');
 
             if (mode === 'login') {
-                tabLogin.className = "flex-1 pb-3 text-center font-bold text-purple-600 border-b-2 border-purple-600 dark:text-purple-400 dark:border-purple-400";
-                tabRegister.className = "flex-1 pb-3 text-center font-medium text-gray-400 border-b-2 border-transparent";
+                tabLogin.className = "flex-1 pb-3 text-center font-bold text-sm text-purple-600 border-b-2 border-purple-600 dark:text-purple-400 dark:border-purple-400";
+                tabRegister.className = "flex-1 pb-3 text-center font-medium text-sm text-gray-400 border-b-2 border-transparent";
                 submitBtn.innerText = i18n[currentLang].loginBtn;
             } else {
-                tabRegister.className = "flex-1 pb-3 text-center font-bold text-purple-600 border-b-2 border-purple-600 dark:text-purple-400 dark:border-purple-400";
-                tabLogin.className = "flex-1 pb-3 text-center font-medium text-gray-400 border-b-2 border-transparent";
+                tabRegister.className = "flex-1 pb-3 text-center font-bold text-sm text-purple-600 border-b-2 border-purple-600 dark:text-purple-400 dark:border-purple-400";
+                tabLogin.className = "flex-1 pb-3 text-center font-medium text-sm text-gray-400 border-b-2 border-transparent";
                 submitBtn.innerText = i18n[currentLang].register;
             }
         }
@@ -825,7 +894,6 @@
             checkSession();
         }
 
-        // --- Profile Calculations ---
         function saveProfile(e) {
             e.preventDefault();
             const age = parseInt(document.getElementById('userAge').value);
@@ -834,14 +902,11 @@
             const weight = parseFloat(document.getElementById('userWeight').value);
             const activity = parseFloat(document.getElementById('userActivity').value);
 
-            // BMI = weight(kg) / (height(m)^2)
             const bmi = (weight / ((height / 100) * (height / 100))).toFixed(1);
 
-            // BMR (Mifflin-St Jeor)
             let bmr = (10 * weight) + (6.25 * height) - (5 * age);
             bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
 
-            // TDEE Target Calories
             const targetCal = Math.round(bmr * activity);
 
             const user = getCurrentUserData();
@@ -864,12 +929,10 @@
             document.getElementById('profileSetupView').classList.remove('hidden');
         }
 
-        // --- Dashboard Rendering (Refactored to match uploaded screenshot) ---
         function renderDashboard() {
             const user = getCurrentUserData();
             if (!user || !user.profile) return;
 
-            // Header profile data
             document.getElementById('headerTargetCal').innerText = user.profile.targetCal;
             document.getElementById('textTargetCalSmall').innerText = `/ ${user.profile.targetCal} kcal`;
             document.getElementById('headerBMI').innerText = user.profile.bmi;
@@ -881,14 +944,12 @@
             else if (bmiVal >= 25) bmiText = "(肥胖)";
             document.getElementById('headerBMIBadge').innerText = bmiText;
 
-            // Initialize logs for current date if needed
             if (!user.logs[selectedDate]) {
                 user.logs[selectedDate] = { food: [], exercise: [] };
             }
 
             const dayLogs = user.logs[selectedDate];
 
-            // Calculate totals
             let totalConsumed = 0;
             let totalProtein = 0;
             let totalCarbs = 0;
@@ -907,7 +968,7 @@
             });
 
             const targetCal = user.profile.targetCal;
-            const netTarget = targetCal + totalBurned; // Net allowance
+            const netTarget = targetCal + totalBurned;
             const remaining = netTarget - totalConsumed;
 
             document.getElementById('textConsumedBig').innerText = totalConsumed;
@@ -921,7 +982,6 @@
             document.getElementById('macroCarbs').innerText = totalCarbs.toFixed(1) + "g";
             document.getElementById('macroFat').innerText = totalFat.toFixed(1) + "g";
 
-            // SVG Circular Ring Progress (251.2 is 2 * PI * 40)
             const circle = document.getElementById('svgCircleProgress');
             const topBar = document.getElementById('topProgressBar');
 
@@ -932,10 +992,9 @@
             let topPct = Math.min(100, Math.max(0, Math.round((totalConsumed / netTarget) * 100)));
             topBar.style.width = topPct + "%";
 
-            // Over-budget Warning Styling
             if (totalConsumed > netTarget) {
                 circle.setAttribute('class', 'text-rose-500 transition-all duration-700');
-                remDisplay.className = "text-4xl font-black text-rose-600 dark:text-rose-400 tracking-tight animate-pulse";
+                remDisplay.className = "text-3xl sm:text-4xl font-black text-rose-600 dark:text-rose-400 tracking-tight animate-pulse leading-none py-0.5";
                 topBar.className = "h-full bg-rose-500 transition-all duration-500";
                 
                 document.getElementById('suggestionText').innerText = currentLang === 'zh-HK' 
@@ -943,7 +1002,7 @@
                     : `⚠️ Exceeded target by ${Math.abs(remaining)} kcal! Consider a light soup or 30-min cardio.`;
             } else {
                 circle.setAttribute('class', 'text-purple-600 dark:text-purple-400 transition-all duration-700');
-                remDisplay.className = "text-4xl font-black text-purple-600 dark:text-purple-400 tracking-tight";
+                remDisplay.className = "text-3xl sm:text-4xl font-black text-purple-600 dark:text-purple-400 tracking-tight leading-none py-0.5";
                 topBar.className = "h-full bg-purple-600 dark:bg-purple-400 transition-all duration-500";
 
                 if (remaining > 800) {
@@ -956,7 +1015,7 @@
                         : "Good balance. Recommended dinner: steamed fish, unsweetened soy milk & green veggies.";
                 } else {
                     document.getElementById('suggestionText').innerText = currentLang === 'zh-HK'
-                        ? "熱量接近上限！如果感到飢餓，可以選擇低卡高纖的水果或無糖高山茶。 "
+                        ? "熱量接近上限！如果感到飢餓，可以選擇低卡高纖的水果或無糖高山茶。"
                         : "Calorie limit nearby! If hungry, opt for low-calorie high-fiber snacks or green tea.";
                 }
             }
@@ -965,18 +1024,17 @@
             renderLogsList();
         }
 
-        // --- Render Favorites ---
         function renderFavorites() {
             const user = getCurrentUserData();
             const container = document.getElementById('favoritesList');
             if (!user.favorites || user.favorites.length === 0) {
-                container.innerHTML = `<span class="text-gray-400 italic">${i18n[currentLang].noFavorites}</span>`;
+                container.innerHTML = `<span class="text-gray-400 italic text-[11px]">${i18n[currentLang].noFavorites}</span>`;
                 return;
             }
 
             container.innerHTML = user.favorites.map((item) => `
-                <button onclick='addFavoriteLog(${JSON.stringify(item)})' class="flex-shrink-0 bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200 px-3 py-1.5 rounded-xl flex items-center gap-1.5 hover:bg-purple-200 transition shadow-sm">
-                    <span class="font-bold">${item.name}</span>
+                <button onclick='addFavoriteLog(${JSON.stringify(item)})' class="flex-shrink-0 bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200 px-3 py-1.5 rounded-xl flex items-center gap-1 hover:bg-purple-200 transition shadow-sm active:scale-95">
+                    <span class="font-bold text-xs">${item.name}</span>
                     <span class="text-[10px] opacity-75">(${item.calories}kcal)</span>
                 </button>
             `).join('');
@@ -1019,35 +1077,33 @@
             renderDashboard();
         }
 
-        // --- Render Food & Exercise Logs List ---
         function renderLogsList() {
             const user = getCurrentUserData();
             const container = document.getElementById('logsContainer');
             const dayLogs = user.logs[selectedDate] || { food: [], exercise: [] };
 
             if (dayLogs.food.length === 0 && dayLogs.exercise.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">${i18n[currentLang].noLogs}</div>`;
+                container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">${i18n[currentLang].noLogs}</div>`;
                 return;
             }
 
             let html = '';
 
-            // Food items
             dayLogs.food.forEach((item) => {
                 const isFav = user.favorites && user.favorites.some(f => f.name === item.name);
                 const hasImg = item.image ? true : false;
 
                 html += `
-                    <div class="bg-purple-50/70 dark:bg-purple-950/30 p-3 rounded-xl border border-purple-100 dark:border-purple-800/40 flex justify-between items-center text-xs hover:border-purple-300 transition">
-                        <div class="flex items-center gap-2.5 cursor-pointer flex-1" onclick='showFoodPhotoModal(${JSON.stringify(item)})'>
+                    <div class="bg-purple-50/70 dark:bg-purple-950/30 p-2.5 rounded-xl border border-purple-100 dark:border-purple-800/40 flex justify-between items-center text-xs hover:border-purple-300 transition">
+                        <div class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0" onclick='showFoodPhotoModal(${JSON.stringify(item)})'>
                             ${hasImg 
-                                ? `<img src="${item.image}" class="w-10 h-10 rounded-lg object-cover border border-purple-200">` 
-                                : `<div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold">🥗</div>`
+                                ? `<img src="${item.image}" class="w-10 h-10 rounded-lg object-cover border border-purple-200 flex-shrink-0">` 
+                                : `<div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold flex-shrink-0">🥗</div>`
                             }
-                            <div class="space-y-0.5">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="font-bold text-gray-800 dark:text-gray-100">${item.name}</span>
-                                    <button onclick='event.stopPropagation(); toggleFavorite(${JSON.stringify(item)})' class="focus:outline-none">
+                            <div class="space-y-0.5 truncate">
+                                <div class="flex items-center gap-1.5 truncate">
+                                    <span class="font-bold text-gray-800 dark:text-gray-100 truncate">${item.name}</span>
+                                    <button onclick='event.stopPropagation(); toggleFavorite(${JSON.stringify(item)})' class="focus:outline-none flex-shrink-0">
                                         <i data-lucide="star" class="w-3.5 h-3.5 ${isFav ? 'text-amber-500 fill-amber-500' : 'text-gray-400'}"></i>
                                     </button>
                                 </div>
@@ -1059,8 +1115,8 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-2">
-                            <span class="font-black text-purple-700 dark:text-purple-300 text-sm">+${item.calories} kcal</span>
+                        <div class="flex items-center gap-1.5 flex-shrink-0 pl-2">
+                            <span class="font-black text-purple-700 dark:text-purple-300 text-xs sm:text-sm">+${item.calories} kcal</span>
                             <button onclick="deleteLog('food', ${item.id})" class="text-gray-400 hover:text-red-500 p-1">
                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             </button>
@@ -1069,10 +1125,9 @@
                 `;
             });
 
-            // Exercise items
             dayLogs.exercise.forEach((item) => {
                 html += `
-                    <div class="bg-indigo-50/70 dark:bg-indigo-950/30 p-3 rounded-xl border border-indigo-100 dark:border-indigo-800/40 flex justify-between items-center text-xs">
+                    <div class="bg-indigo-50/70 dark:bg-indigo-950/30 p-2.5 rounded-xl border border-indigo-100 dark:border-indigo-800/40 flex justify-between items-center text-xs">
                         <div class="space-y-0.5">
                             <div class="flex items-center gap-1.5">
                                 <i data-lucide="activity" class="w-3.5 h-3.5 text-indigo-600"></i>
@@ -1082,8 +1137,8 @@
                                 <span>${item.duration} mins</span>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-black text-emerald-600 dark:text-emerald-400 text-sm">-${item.calories} kcal</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-black text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">-${item.calories} kcal</span>
                             <button onclick="deleteLog('exercise', ${item.id})" class="text-gray-400 hover:text-red-500 p-1">
                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             </button>
@@ -1116,7 +1171,6 @@
             openModal('foodPhotoModal');
         }
 
-        // --- Open Exercise List Detail Modal ---
         function openExerciseListModal() {
             const user = getCurrentUserData();
             const container = document.getElementById('exerciseModalList');
@@ -1126,15 +1180,15 @@
                 container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">今日尚未紀錄任何運動。</div>`;
             } else {
                 container.innerHTML = dayLogs.exercise.map(item => `
-                    <div class="bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-xl border border-emerald-100 dark:border-emerald-800/40 flex justify-between items-center text-xs">
+                    <div class="bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-800/40 flex justify-between items-center text-xs">
                         <div>
                             <div class="font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1">
                                 <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-600"></i> ${item.name}
                             </div>
                             <div class="text-[10px] text-gray-500">${item.duration} 分鐘</div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-black text-emerald-600 dark:text-emerald-400 text-sm">-${item.calories} kcal</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-black text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">-${item.calories} kcal</span>
                             <button onclick="deleteLog('exercise', ${item.id}); openExerciseListModal();" class="text-gray-400 hover:text-red-500 p-1">
                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             </button>
@@ -1156,7 +1210,6 @@
             renderDashboard();
         }
 
-        // --- Modals Management ---
         function openModal(id) {
             document.getElementById(id).classList.remove('hidden');
         }
@@ -1165,34 +1218,33 @@
             document.getElementById(id).classList.add('hidden');
         }
 
-        // --- Gemini API Helpers with Retry Logic ---
-        async function fetchGeminiAPI(payload) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            const delays = [1000, 2000, 4000, 8000, 16000];
-
-            for (let attempt = 0; attempt <= 5; attempt++) {
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.ok) {
-                        return await response.json();
-                    }
-                } catch (e) {
-                    // Retrying
-                }
-
-                if (attempt < 5) {
-                    await new Promise(res => setTimeout(res, delays[attempt]));
-                }
-            }
-            throw new Error("Gemini API connection failed.");
+        function closeUnrecognizedModal() {
+            document.getElementById('unrecognizedModal').classList.add('hidden');
+            document.getElementById('foodName').focus();
         }
 
-        // --- AI Camera Image Recognition ---
+        async function fetchGeminiAPI(payload, timeoutMs = 0) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const fetchPromise = fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(res => {
+                if (!res.ok) throw new Error("API Error");
+                return res.json();
+            });
+
+            if (timeoutMs > 0) {
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error("TIMEOUT")), timeoutMs);
+                });
+                return await Promise.race([fetchPromise, timeoutPromise]);
+            } else {
+                return await fetchPromise;
+            }
+        }
+
         async function handleImageUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -1210,7 +1262,7 @@
 
                 const base64Data = currentUploadedImageBase64.split(',')[1];
 
-                const prompt = "辨識圖片中的食物或飲品。請以繁體中文 (香港口語習慣或標準中文) 返回 JSON 格式，不要包含任何 markdown 標記，結構為：{\"name\": \"食物名稱\", \"calories\": 數字, \"protein\": 數字, \"carbs\": 數字, \"fat\": 數字}";
+                const prompt = "辨識圖片中的食物或飲品。請以繁體中文 (香港常用詞彙) 返回 JSON 格式，不要包含任何 markdown 標記，結構為：{\"name\": \"食物名稱\", \"calories\": 數字, \"protein\": 數字, \"carbs\": 數字, \"fat\": 數字}";
 
                 const payload = {
                     contents: [{
@@ -1224,24 +1276,66 @@
                 };
 
                 try {
-                    const result = await fetchGeminiAPI(payload);
+                    // Strict 5 seconds timeout limit
+                    const result = await fetchGeminiAPI(payload, 5000);
                     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
                     if (text) {
                         const parsed = JSON.parse(text);
-                        document.getElementById('foodName').value = parsed.name || "未知食物";
-                        document.getElementById('foodCal').value = parsed.calories || 250;
-                        document.getElementById('foodProtein').value = parsed.protein || 10;
-                        document.getElementById('foodCarbs').value = parsed.carbs || 30;
-                        document.getElementById('foodFat').value = parsed.fat || 8;
-                        document.getElementById('notThisFoodBtn').classList.remove('hidden');
+                        if (parsed && parsed.name && parsed.name !== "未知食物") {
+                            document.getElementById('foodName').value = parsed.name;
+                            document.getElementById('foodCal').value = parsed.calories || 0;
+                            document.getElementById('foodProtein').value = parsed.protein || 0;
+                            document.getElementById('foodCarbs').value = parsed.carbs || 0;
+                            document.getElementById('foodFat').value = parsed.fat || 0;
+                            spinner.classList.add('hidden');
+                            return;
+                        }
                     }
+                    throw new Error("RECOGNITION_FAILED");
                 } catch (err) {
-                    alert(currentLang === 'zh-HK' ? "AI 辨識失敗，請手動輸入。" : "AI recognition failed, please enter manually.");
-                } finally {
+                    // Fail or > 5s timeout -> popup fallback notification box
                     spinner.classList.add('hidden');
+                    openModal('unrecognizedModal');
                 }
             };
             reader.readAsDataURL(file);
+        }
+
+        async function autoEstimateNutrition(foodName) {
+            const name = foodName || document.getElementById('foodName').value.trim();
+            if (!name) return;
+
+            const statusElem = document.getElementById('autoCalcStatus');
+            statusElem.classList.remove('hidden');
+
+            const prompt = `估算食物「${name}」標準一份的卡路里(kcal)、蛋白質(g)、碳水化合物(g)、脂肪(g)。請回傳乾淨的 JSON 格式：{"calories": 數字, "protein": 數字, "carbs": 數字, "fat": 數字}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { responseMimeType: "application/json" }
+            };
+
+            try {
+                const result = await fetchGeminiAPI(payload, 4000);
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (text) {
+                    const parsed = JSON.parse(text);
+                    document.getElementById('foodCal').value = parsed.calories !== undefined ? parsed.calories : 200;
+                    document.getElementById('foodProtein').value = parsed.protein !== undefined ? parsed.protein : 10;
+                    document.getElementById('foodCarbs').value = parsed.carbs !== undefined ? parsed.carbs : 25;
+                    document.getElementById('foodFat').value = parsed.fat !== undefined ? parsed.fat : 6;
+                }
+            } catch (err) {
+                // Heuristic backup fallback calculation if AI busy
+                if (!document.getElementById('foodCal').value) {
+                    document.getElementById('foodCal').value = 250;
+                    document.getElementById('foodProtein').value = 10;
+                    document.getElementById('foodCarbs').value = 30;
+                    document.getElementById('foodFat').value = 8;
+                }
+            } finally {
+                statusElem.classList.add('hidden');
+            }
         }
 
         function resetFoodForm() {
@@ -1251,33 +1345,8 @@
             document.getElementById('foodCarbs').value = "";
             document.getElementById('foodFat').value = "";
             currentUploadedImageBase64 = null;
-            document.getElementById('notThisFoodBtn').classList.add('hidden');
             document.getElementById('imagePreviewContainer').classList.add('hidden');
-        }
-
-        async function autoEstimateNutrition() {
-            const name = document.getElementById('foodName').value.trim();
-            if (!name) return;
-
-            const prompt = `估算食物「${name}」一份的卡路里、蛋白質(g)、碳水化合物(g)、脂肪(g)。請回傳 JSON 格式：{"calories": 數字, "protein": 數字, "carbs": 數字, "fat": 數字}`;
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { responseMimeType: "application/json" }
-            };
-
-            try {
-                const result = await fetchGeminiAPI(payload);
-                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (text) {
-                    const parsed = JSON.parse(text);
-                    document.getElementById('foodCal').value = parsed.calories || 200;
-                    document.getElementById('foodProtein').value = parsed.protein || 5;
-                    document.getElementById('foodCarbs').value = parsed.carbs || 20;
-                    document.getElementById('foodFat').value = parsed.fat || 5;
-                }
-            } catch (err) {
-                // Fallback estimate
-            }
+            document.getElementById('autoCalcStatus').classList.add('hidden');
         }
 
         function submitFoodLog(e) {
@@ -1307,7 +1376,6 @@
             renderDashboard();
         }
 
-        // --- Exercise Calculations ---
         function calcExerciseCalories() {
             const select = document.getElementById('exerciseName');
             const met = parseFloat(select.options[select.selectedIndex].getAttribute('data-met') || "5");
@@ -1316,7 +1384,6 @@
             const user = getCurrentUserData();
             const weight = user?.profile?.weight || 65;
 
-            // Burned = MET * weight(kg) * duration(hr)
             const burned = Math.round(met * weight * (duration / 60));
             document.getElementById('calculatedBurn').innerText = `${burned} kcal`;
             return burned;
@@ -1343,7 +1410,6 @@
             renderDashboard();
         }
 
-        // --- AI Nutritionist Chat Logic ("小編") ---
         function openAIChatModal() {
             openModal('aiChatModal');
             const chatContainer = document.getElementById('chatMessages');
@@ -1360,8 +1426,8 @@
             
             const msgHtml = `
                 <div class="flex gap-2 ${isUser ? 'justify-end' : 'justify-start'}">
-                    ${!isUser ? `<div class="w-7 h-7 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs flex-shrink-0">👩‍⚕️</div>` : ''}
-                    <div class="max-w-[80%] p-3 rounded-2xl text-xs ${isUser ? 'bg-purple-600 text-white rounded-tr-none' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow border border-purple-100 dark:border-purple-800 rounded-tl-none'}">
+                    ${!isUser ? `<div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] flex-shrink-0">👩‍⚕️</div>` : ''}
+                    <div class="max-w-[82%] p-2.5 rounded-2xl text-xs leading-relaxed ${isUser ? 'bg-purple-600 text-white rounded-tr-none' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow border border-purple-100 dark:border-purple-800 rounded-tl-none'}">
                         ${text.replace(/\n/g, '<br>')}
                     </div>
                 </div>
@@ -1399,7 +1465,6 @@
             }
         }
 
-        // --- Multi-language & Theme Toggle ---
         function toggleLanguage() {
             currentLang = currentLang === 'zh-HK' ? 'en' : 'zh-HK';
             document.getElementById('langBtn').innerText = currentLang === 'zh-HK' ? 'EN' : '中文';
