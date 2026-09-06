@@ -23,6 +23,7 @@
                             700: '#6d28d9',
                             800: '#5b21b6',
                             900: '#4c1d95',
+                            950: '#2e1065',
                         }
                     }
                 }
@@ -32,7 +33,6 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Mobile-optimized smooth scroll & layout */
         html, body {
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
@@ -49,7 +49,6 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
         }
-        /* Custom Mobile Scrollbars */
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
@@ -64,7 +63,6 @@
         .dark ::-webkit-scrollbar-thumb {
             background: #4c1d95;
         }
-        /* Pulse Animation for Auto-estimating state */
         @keyframes subtlePulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -97,7 +95,7 @@
             
             <div class="flex items-center gap-1.5">
                 <!-- Date Picker -->
-                <input type="date" id="datePicker" class="hidden text-xs bg-purple-100/80 dark:bg-purple-900/50 text-purple-900 dark:text-purple-200 rounded-lg px-2 py-1.5 border border-purple-200 dark:border-purple-700 focus:outline-none">
+                <input type="date" id="datePicker" class="text-xs bg-purple-100/80 dark:bg-purple-900/50 text-purple-900 dark:text-purple-200 rounded-lg px-2 py-1.5 border border-purple-200 dark:border-purple-700 focus:outline-none">
 
                 <!-- Language Toggle -->
                 <button id="langBtn" onclick="toggleLanguage()" class="px-2.5 py-1.5 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 hover:bg-purple-200 active:scale-95 transition text-xs font-bold">
@@ -347,11 +345,10 @@
 
         <!-- ================= MODALS ================= -->
 
-        <!-- 1. Add Food Modal (Camera Photo / Album Upload / Auto-Nutrition on Typing) -->
+        <!-- 1. Add Food Modal -->
         <div id="foodModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
             <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 overflow-hidden flex flex-col max-h-[92vh]">
                 
-                <!-- Modal Header -->
                 <div class="p-3.5 bg-purple-600 text-white flex justify-between items-center">
                     <h3 class="font-bold text-sm flex items-center gap-2">
                         <i data-lucide="utensils" class="w-4 h-4"></i>
@@ -363,21 +360,17 @@
                 </div>
 
                 <div class="p-4 overflow-y-auto space-y-3.5">
-                    <!-- Photo Options: Camera VS Album Selection -->
+                    <!-- Photo Options -->
                     <div class="bg-purple-50 dark:bg-purple-950/50 p-3.5 rounded-2xl border border-purple-200 dark:border-purple-800/80 text-center space-y-2.5">
-                        <div class="flex items-center justify-between">
-                            <h4 class="font-bold text-xs text-purple-900 dark:text-purple-200 flex items-center gap-1">
-                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-500"></i>
-                                <span data-i18n="aiCamTitle">AI 智能圖片辨識食物 (5秒內自動分析)</span>
-                            </h4>
-                        </div>
-                        <p class="text-[11px] text-gray-500 dark:text-gray-400 text-left" data-i18n="aiCamDesc">拍照或從相簿選擇食物圖片，系統將自動提取卡路里與營養！</p>
+                        <h4 class="font-bold text-xs text-purple-900 dark:text-purple-200 flex items-center justify-center gap-1">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-500"></i>
+                            <span data-i18n="aiCamTitle">AI 智能圖片辨識食物 (自動分析)</span>
+                        </h4>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400" data-i18n="aiCamDesc">拍照或從相簿選擇食物圖片，系統將自動提取卡路里與營養！</p>
                         
-                        <!-- Hidden Inputs for Camera and Album Gallery -->
                         <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageUpload(event)">
                         <input type="file" id="galleryInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
                         
-                        <!-- Dual Upload Buttons for Mobile -->
                         <div class="grid grid-cols-2 gap-2">
                             <button onclick="document.getElementById('cameraInput').click()" class="py-2.5 px-2 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
                                 <i data-lucide="camera" class="w-4 h-4"></i>
@@ -389,12 +382,11 @@
                             </button>
                         </div>
 
-                        <!-- Image Preview & AI Analyzing Status Box -->
                         <div id="imagePreviewContainer" class="hidden relative rounded-xl overflow-hidden max-h-40 bg-black mt-2">
                             <img id="foodPreviewImg" class="w-full h-full object-cover">
                             <div id="aiAnalyzingSpinner" class="absolute inset-0 bg-black/65 backdrop-blur-xs flex flex-col items-center justify-center text-white text-xs gap-2">
                                 <div class="w-7 h-7 border-3 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
-                                <span id="aiAnalyzingText" class="font-bold text-xs" data-i18n="analyzing">AI 智能辨識中 (上限5秒)...</span>
+                                <span id="aiAnalyzingText" class="font-bold text-xs" data-i18n="analyzing">AI 智能辨識中...</span>
                             </div>
                         </div>
                     </div>
@@ -405,7 +397,6 @@
                         <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
                     </div>
 
-                    <!-- Food Input Form (Live Auto Estimator triggered on typing) -->
                     <form id="foodForm" onsubmit="submitFoodLog(event)" class="space-y-3">
                         <div>
                             <div class="flex justify-between items-center mb-1">
@@ -439,151 +430,69 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold text-sm rounded-xl shadow-lg shadow-purple-500/20 transition mt-1" data-i18n="addLogBtn">
-                            加入飲食紀錄
+                        <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold text-sm rounded-xl shadow-lg shadow-purple-500/30 transition" data-i18n="confirmAddFood">
+                            確認新增飲食
                         </button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- 1.5 Unrecognized / Timeout Alert Box Modal -->
-        <div id="unrecognizedModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-xs sm:max-w-sm rounded-2xl p-5 shadow-2xl border border-purple-200 dark:border-purple-800 text-center space-y-3.5 animate-bounce-short">
-                <div class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center text-2xl font-bold">
-                    ⚠️
-                </div>
-                <h3 class="font-bold text-base text-gray-900 dark:text-gray-100" data-i18n="unrecognizedTitle">無法於 5 秒內辨識圖片</h3>
-                <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed" data-i18n="unrecognizedDesc">
-                    未能成功分辨相片中的食物。請直接手動輸入「食物名稱」，AI 將即時為您自動計算卡路里、蛋白質及脂肪！
-                </p>
-                <button onclick="closeUnrecognizedModal()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow transition">
-                    好，前往輸入食物名稱
-                </button>
-            </div>
-        </div>
-
         <!-- 2. Add Exercise Modal -->
         <div id="exerciseModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl border border-indigo-100 dark:border-indigo-800 overflow-hidden">
                 <div class="p-3.5 bg-indigo-600 text-white flex justify-between items-center">
                     <h3 class="font-bold text-sm flex items-center gap-2">
                         <i data-lucide="activity" class="w-4 h-4"></i>
-                        <span data-i18n="addExerciseHeader">新增運動紀錄</span>
+                        <span data-i18n="addExerciseHeader">記錄運動與消耗</span>
                     </h3>
                     <button onclick="closeModal('exerciseModal')" class="p-1 hover:opacity-75">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
 
-                <form id="exerciseForm" onsubmit="submitExerciseLog(event)" class="p-4 space-y-3.5">
+                <form onsubmit="submitExerciseLog(event)" class="p-4 space-y-3.5">
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="exerciseItem">運動項目</label>
-                        <select id="exerciseName" onchange="calcExerciseCalories()" class="w-full px-3 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
-                            <option value="跑步 (Running)" data-met="8">跑步 (Running)</option>
-                            <option value="快步走 (Brisk Walking)" data-met="3.8">快步走 (Brisk Walking)</option>
-                            <option value="單車 (Cycling)" data-met="6">單車 (Cycling)</option>
-                            <option value="游泳 (Swimming)" data-met="7">游泳 (Swimming)</option>
-                            <option value="健身/重訓 (Weight Training)" data-met="5">健身 / 重訓 (Weight Training)</option>
-                            <option value="羽毛球 (Badminton)" data-met="5.5">羽毛球 (Badminton)</option>
-                            <option value="籃球 (Basketball)" data-met="6.5">籃球 (Basketball)</option>
-                            <option value="足球 (Football)" data-met="7">足球 (Football)</option>
-                            <option value="泰拳/搏擊 (Muay Thai)" data-met="9">泰拳 / 搏擊 (Muay Thai)</option>
-                            <option value="行山/郊遊 (Hiking)" data-met="5.3">行山 / 郊遊 (Hiking)</option>
-                            <option value="跳繩 (Rope Jumping)" data-met="10">跳繩 (Rope Jumping)</option>
-                            <option value="瑜伽 (Yoga)" data-met="2.5">瑜伽 (Yoga)</option>
-                            <option value="普拉提 (Pilates)" data-met="3">普拉提 (Pilates)</option>
-                            <option value="保齡球 (Bowling)" data-met="3">保齡球 (Bowling)</option>
-                            <option value="乒乓球 (Table Tennis)" data-met="4">乒乓球 (Table Tennis)</option>
-                            <option value="爬樓梯/Stairmaster" data-met="8.8">爬樓梯 / Stairmaster</option>
-                            <option value="高強度間歇 (HIIT)" data-met="10">高強度間歇 (HIIT)</option>
+                        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1" data-i18n="exName">運動項目</label>
+                        <select id="exerciseType" onchange="estimateExerciseCalories()" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option value="running" data-i18n="ex1">慢跑 / 跑步 (Running)</option>
+                            <option value="cycling" data-i18n="ex2">單車 / 騎單車 (Cycling)</option>
+                            <option value="swimming" data-i18n="ex3">游泳 (Swimming)</option>
+                            <option value="hiit" data-i18n="ex4">HIIT 高強度間歇訓練</option>
+                            <option value="weightlifting" data-i18n="ex5">重訓 / 力量訓練 (Weightlifting)</option>
+                            <option value="yoga" data-i18n="ex6">瑜伽 / 伸展 (Yoga/Stretching)</option>
+                            <option value="walking" data-i18n="ex7">快走 / 散步 (Brisk Walking)</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" data-i18n="durationMin">運動時間 (分鐘)</label>
-                        <input type="number" id="exerciseDuration" min="1" value="30" oninput="calcExerciseCalories()" class="w-full px-3 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1" data-i18n="exDuration">運動時長 (分鐘)</label>
+                        <input type="number" id="exerciseDuration" required min="1" max="600" value="30" oninput="estimateExerciseCalories()" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
                     </div>
 
-                    <div class="bg-indigo-50 dark:bg-indigo-950/40 p-3 rounded-xl flex justify-between items-center text-xs text-indigo-900 dark:text-indigo-200">
-                        <span data-i18n="estimatedBurn">預計消耗熱量：</span>
-                        <span id="calculatedBurn" class="text-base font-black text-indigo-600 dark:text-indigo-400">180 kcal</span>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300" data-i18n="exCaloriesBurned">消耗熱量 (kcal - AI 自動估算)</label>
+                        </div>
+                        <input type="number" id="exerciseCalories" required min="0" value="200" class="w-full px-3.5 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
                     </div>
 
-                    <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-sm rounded-xl shadow-lg transition" data-i18n="addExerciseLogBtn">
-                        扣減當日熱量並紀錄
+                    <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-500/30 transition" data-i18n="confirmAddExercise">
+                        確認記錄運動
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- 3. Exercise Log Detail Modal -->
-        <div id="exerciseListModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-2xl shadow-2xl border border-emerald-100 dark:border-emerald-800 overflow-hidden">
-                <div class="p-3.5 bg-emerald-600 text-white flex justify-between items-center">
-                    <h3 class="font-bold text-sm flex items-center gap-2">
-                        <i data-lucide="zap" class="w-4 h-4"></i>
-                        <span data-i18n="exerciseDetailHeader">當日運動消耗明細</span>
-                    </h3>
-                    <button onclick="closeModal('exerciseListModal')" class="p-1 hover:opacity-75">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-                </div>
-
-                <div class="p-4 space-y-3 max-h-[60vh] overflow-y-auto">
-                    <div id="exerciseModalList" class="space-y-2"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. Food Detail & Image Preview Modal -->
-        <div id="foodPhotoModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-xs sm:max-w-sm rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 overflow-hidden">
-                <div class="p-3.5 bg-purple-600 text-white flex justify-between items-center">
-                    <h3 id="modalFoodTitle" class="font-bold text-sm">食物詳細紀錄</h3>
-                    <button onclick="closeModal('foodPhotoModal')" class="p-1 hover:opacity-75">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-                </div>
-
-                <div class="p-4 space-y-3">
-                    <div id="modalFoodImageContainer" class="rounded-xl overflow-hidden max-h-52 bg-black flex items-center justify-center">
-                        <img id="modalFoodImg" class="w-full h-full object-cover">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <div class="bg-purple-50 dark:bg-purple-950/40 p-2.5 rounded-xl border border-purple-100 dark:border-purple-800">
-                            <span class="text-gray-400 block text-[10px]" data-i18n="calories">卡路里</span>
-                            <span id="modalFoodCal" class="text-sm font-black text-purple-700 dark:text-purple-300">0 kcal</span>
-                        </div>
-                        <div class="bg-purple-50 dark:bg-purple-950/40 p-2.5 rounded-xl border border-purple-100 dark:border-purple-800">
-                            <span class="text-gray-400 block text-[10px]" data-i18n="protein">蛋白質</span>
-                            <span id="modalFoodProtein" class="text-sm font-black text-purple-700 dark:text-purple-300">0g</span>
-                        </div>
-                        <div class="bg-purple-50 dark:bg-purple-950/40 p-2.5 rounded-xl border border-purple-100 dark:border-purple-800">
-                            <span class="text-gray-400 block text-[10px]" data-i18n="carbs">碳水化合物</span>
-                            <span id="modalFoodCarbs" class="text-sm font-black text-purple-700 dark:text-purple-300">0g</span>
-                        </div>
-                        <div class="bg-purple-50 dark:bg-purple-950/40 p-2.5 rounded-xl border border-purple-100 dark:border-purple-800">
-                            <span class="text-gray-400 block text-[10px]" data-i18n="fat">脂肪</span>
-                            <span id="modalFoodFat" class="text-sm font-black text-purple-700 dark:text-purple-300">0g</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. AI Nutritionist Chat Modal ("小編") -->
+        <!-- 3. AI Chat Assistant Modal -->
         <div id="aiChatModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 overflow-hidden flex flex-col h-[85vh]">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-md h-[85vh] sm:h-[500px] rounded-t-3xl sm:rounded-2xl shadow-2xl border border-purple-100 dark:border-purple-800 flex flex-col overflow-hidden">
                 <div class="p-3.5 bg-gradient-to-r from-purple-700 to-indigo-700 text-white flex justify-between items-center">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-base">
-                            👩‍⚕️
-                        </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center font-bold text-xs">AI</div>
                         <div>
-                            <h3 class="font-bold text-xs sm:text-sm leading-tight">營養師「小編」</h3>
-                            <p class="text-[9px] sm:text-[10px] text-purple-200" data-i18n="aiRole">FitSecret AI 健康飲食與運動顧問</p>
+                            <h3 class="font-bold text-sm" data-i18n="chatHeader">FitSecret 健康 AI 顧問</h3>
+                            <span class="text-[10px] text-purple-200 block" data-i18n="chatSub">隨時解答飲食營養與瘦身疑問</span>
                         </div>
                     </div>
                     <button onclick="closeModal('aiChatModal')" class="p-1 hover:opacity-75">
@@ -591,832 +500,790 @@
                     </button>
                 </div>
 
-                <!-- Messages Area -->
-                <div id="chatMessages" class="flex-1 p-3.5 overflow-y-auto space-y-3 bg-purple-50/40 dark:bg-gray-900/50"></div>
+                <!-- Chat History Container -->
+                <div id="chatMessages" class="flex-1 p-3.5 overflow-y-auto space-y-3 text-xs bg-purple-50/50 dark:bg-gray-900/50">
+                    <div class="flex gap-2">
+                        <div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold flex-shrink-0 text-[10px]">AI</div>
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border border-purple-100 dark:border-purple-700 text-gray-800 dark:text-gray-200 leading-relaxed max-w-[85%]">
+                            你好！我是您的專屬健康小編。請問今天有關於卡路里控制、飲食搭配或是運動減脂的問題嗎？
+                        </div>
+                    </div>
+                </div>
 
-                <!-- Input Controls -->
-                <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex gap-2">
-                    <input type="text" id="chatInput" placeholder="詢問關於飲食或運動問題..." onkeypress="if(event.key==='Enter') sendChatMessage()" class="flex-1 px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
-                    <button onclick="sendChatMessage()" class="px-3.5 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold hover:bg-purple-700 transition active:scale-95 flex items-center justify-center">
+                <!-- Chat Input Form -->
+                <form onsubmit="sendAIChatMessage(event)" class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex gap-2">
+                    <input type="text" id="chatInput" placeholder="向 AI 詢問健康減脂建議..." class="flex-1 px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 outline-none">
+                    <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs transition active:scale-95 flex items-center justify-center">
                         <i data-lucide="send" class="w-4 h-4"></i>
                     </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 4. Exercise History List Modal -->
+        <div id="exerciseListModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl border border-emerald-100 dark:border-emerald-800 overflow-hidden flex flex-col max-h-[80vh]">
+                <div class="p-3.5 bg-emerald-600 text-white flex justify-between items-center">
+                    <h3 class="font-bold text-sm flex items-center gap-2">
+                        <i data-lucide="activity" class="w-4 h-4"></i>
+                        <span data-i18n="exListHeader">今日運動消耗明細</span>
+                    </h3>
+                    <button onclick="closeModal('exerciseListModal')" class="p-1 hover:opacity-75">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div id="exerciseLogsContainer" class="p-4 overflow-y-auto space-y-2.5 flex-1">
+                    <div class="text-center py-6 text-gray-400 text-xs" data-i18n="noExerciseLogs">今天尚未記錄任何運動消耗。</div>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- App Main Script Logic -->
+    <!-- JavaScript Application Logic -->
     <script>
-        function saveUsersData() {
-            localStorage.setItem('fitsecret_users', JSON.stringify(usersData));
-        }
+        let currentLang = 'zh';
+        let currentUser = null;
+        let usersDB = JSON.parse(localStorage.getItem('fitsecret_users') || '{}');
+        let currentAuthMode = 'login'; // 'login' or 'register'
 
-        function getCurrentUserData() {
-            if (!currentUser || !usersData[currentUser]) return null;
-            const user = usersData[currentUser];
-            if (!user.logs) user.logs = {};
-            if (!user.favorites) user.favorites = [];
-            return user;
-        }
-
-        function checkSession() {
-            const dateInput = document.getElementById('datePicker');
-            const logoutBtn = document.getElementById('logoutBtn');
-
-            if (currentUser) {
-                dateInput.classList.remove('hidden');
-                logoutBtn.classList.remove('hidden');
-                document.getElementById('authView').classList.add('hidden');
-                
-                const userData = getCurrentUserData();
-                if (!userData.profile) {
-                    document.getElementById('profileSetupView').classList.remove('hidden');
-                    document.getElementById('dashboardView').classList.add('hidden');
-                } else {
-                    document.getElementById('profileSetupView').classList.add('hidden');
-                    document.getElementById('dashboardView').classList.remove('hidden');
-                    renderDashboard();
-                }
-            } else {
-                dateInput.classList.add('hidden');
-                logoutBtn.classList.add('hidden');
-                document.getElementById('authView').classList.remove('hidden');
-                document.getElementById('profileSetupView').classList.add('hidden');
-                document.getElementById('dashboardView').classList.add('hidden');
+        const i18nData = {
+            zh: {
+                welcomeTitle: "歡迎使用 FitSecret",
+                welcomeSub: "您專屬的手機卡路里與健康 AI 助理",
+                login: "登入",
+                register: "註冊新帳號",
+                username: "使用者名稱 (Username)",
+                password: "密碼 (最少 8 位字元)",
+                loginBtn: "登入帳號",
+                registerBtn: "註冊並建立帳號",
+                setupTitle: "建立個人健康檔案",
+                setupSub: "請填寫基本資料，為您計算每日建議攝取熱量",
+                age: "年齡",
+                gender: "性別",
+                male: "男",
+                female: "女",
+                height: "身高 (cm)",
+                weight: "體重 (kg)",
+                activity: "每週運動頻率",
+                act1: "久坐 / 幾乎不運動",
+                act2: "輕度運動 (每週 1-3 天)",
+                act3: "中度運動 (每週 3-5 天)",
+                act4: "高強度運動 (每週 6-7 天)",
+                saveBtn: "儲存並進入主頁",
+                targetHeaderTitle: "個人目標數據",
+                targetTag: "目標:",
+                settings: "修改",
+                remainingBudget: "剩餘熱量配額",
+                consumedText: "攝取",
+                burnedText: "消耗",
+                protein: "蛋白質",
+                carbs: "碳水化合物",
+                fat: "脂肪",
+                dietTipTitle: "每日熱量與運動 AI 建議",
+                chatWithEditor: "對話小編",
+                addFoodBtn: "+ 記錄飲食 (拍照/相簿/手動)",
+                addExerciseBtn: "+ 記錄運動",
+                favoritesTitle: "我的最愛食物 (點擊快速補登)",
+                noFavorites: "暫無最愛食物，在飲食紀錄中點擊星號即可加入。",
+                dailyLogs: "當日明細紀錄",
+                noLogs: "今天尚未有任何飲食或運動記錄。",
+                addFoodHeader: "新增飲食紀錄",
+                aiCamTitle: "AI 智能圖片辨識食物 (自動分析)",
+                aiCamDesc: "拍照或從相簿選擇食物圖片，系統將自動提取卡路里與營養！",
+                takePhotoBtn: "📷 即時拍照",
+                uploadAlbumBtn: "🖼️ 手機相簿",
+                analyzing: "AI 智能辨識中...",
+                orManual: "或 手動輸入食物名稱 (自動生成營養)",
+                foodName: "食物 / 飲品名稱",
+                calories: "卡路里 (kcal)",
+                proteinG: "蛋白質 (g)",
+                carbsG: "碳水化合物 (g)",
+                fatG: "脂肪 (g)",
+                confirmAddFood: "確認新增飲食",
+                addExerciseHeader: "記錄運動與消耗",
+                exName: "運動項目",
+                ex1: "慢跑 / 跑步 (Running)",
+                ex2: "單車 / 騎單車 (Cycling)",
+                ex3: "游泳 (Swimming)",
+                ex4: "HIIT 高強度間歇訓練",
+                ex5: "重訓 / 力量訓練 (Weightlifting)",
+                ex6: "瑜伽 / 伸展 (Yoga/Stretching)",
+                ex7: "快走 / 散步 (Brisk Walking)",
+                exDuration: "運動時長 (分鐘)",
+                exCaloriesBurned: "消耗熱量 (kcal - AI 自動估算)",
+                confirmAddExercise: "確認記錄運動",
+                chatHeader: "FitSecret 健康 AI 顧問",
+                chatSub: "隨時解答飲食營養與瘦身疑問",
+                exListHeader: "今日運動消耗明細",
+                noExerciseLogs: "今天尚未記錄任何運動消耗。"
+            },
+            en: {
+                welcomeTitle: "Welcome to FitSecret",
+                welcomeSub: "Your Personal Mobile Calorie & Health AI Assistant",
+                login: "Login",
+                register: "Register",
+                username: "Username",
+                password: "Password (Min 8 chars)",
+                loginBtn: "Login",
+                registerBtn: "Register & Create Account",
+                setupTitle: "Set Up Your Health Profile",
+                setupSub: "Please fill in your details to calculate your daily target calories.",
+                age: "Age",
+                gender: "Gender",
+                male: "Male",
+                female: "Female",
+                height: "Height (cm)",
+                weight: "Weight (kg)",
+                activity: "Weekly Activity Level",
+                act1: "Sedentary / Little or no exercise",
+                act2: "Lightly active (1-3 days/wk)",
+                act3: "Moderately active (3-5 days/wk)",
+                act4: "Very active (6-7 days/wk)",
+                saveBtn: "Save & Enter Dashboard",
+                targetHeaderTitle: "Personal Targets",
+                targetTag: "Target:",
+                settings: "Edit",
+                remainingBudget: "Remaining Calorie Budget",
+                consumedText: "Consumed",
+                burnedText: "Burned",
+                protein: "Protein",
+                carbs: "Carbs",
+                fat: "Fat",
+                dietTipTitle: "Daily AI Nutrition & Fitness Tip",
+                chatWithEditor: "Ask AI",
+                addFoodBtn: "+ Log Food (Camera/Album/Manual)",
+                addExerciseBtn: "+ Log Exercise",
+                favoritesTitle: "My Favorite Foods (Tap to Quick Add)",
+                noFavorites: "No favorites yet. Tap the star icon in logs to add.",
+                dailyLogs: "Today's Logs",
+                noLogs: "No food or exercise logs recorded for today.",
+                addFoodHeader: "Add Food Log",
+                aiCamTitle: "AI Photo Food Recognition",
+                aiCamDesc: "Take or upload a food photo, AI will extract calories & macros instantly!",
+                takePhotoBtn: "📷 Take Photo",
+                uploadAlbumBtn: "🖼️ Photo Album",
+                analyzing: "AI Analyzing Image...",
+                orManual: "Or Enter Food Name Manually",
+                foodName: "Food / Drink Name",
+                calories: "Calories (kcal)",
+                proteinG: "Protein (g)",
+                carbsG: "Carbs (g)",
+                fatG: "Fat (g)",
+                confirmAddFood: "Confirm & Add Food",
+                addExerciseHeader: "Log Exercise & Burn",
+                exName: "Exercise Type",
+                ex1: "Running / Jogging",
+                ex2: "Cycling",
+                ex3: "Swimming",
+                ex4: "HIIT Workout",
+                ex5: "Weightlifting / Strength",
+                ex6: "Yoga / Stretching",
+                ex7: "Brisk Walking",
+                exDuration: "Duration (mins)",
+                exCaloriesBurned: "Calories Burned (kcal - AI Estimated)",
+                confirmAddExercise: "Confirm Exercise Log",
+                chatHeader: "FitSecret Health AI Advisor",
+                chatSub: "Ask any nutrition or weight loss questions",
+                exListHeader: "Today's Exercise Breakdown",
+                noExerciseLogs: "No exercise burned calories recorded today."
             }
-        }
+        };
 
-        function switchAuthTab(mode) {
-            authMode = mode;
-            const tabLogin = document.getElementById('tabLogin');
-            const tabRegister = document.getElementById('tabRegister');
-            const submitBtn = document.getElementById('authSubmitBtn');
-            const errDiv = document.getElementById('authError');
-            errDiv.classList.add('hidden');
-
-            if (mode === 'login') {
-                tabLogin.className = "flex-1 pb-3 text-center font-bold text-sm text-purple-600 border-b-2 border-purple-600 dark:text-purple-400 dark:border-purple-400";
-                tabRegister.className = "flex-1 pb-3 text-center font-medium text-sm text-gray-400 border-b-2 border-transparent";
-                submitBtn.innerText = i18n[currentLang].loginBtn;
-            } else {
-                tabRegister.className = "flex-1 pb-3 text-center font-bold text-sm text-purple-600 border-b-2 border-purple-600 dark:text-purple-400 dark:border-purple-400";
-                tabLogin.className = "flex-1 pb-3 text-center font-medium text-sm text-gray-400 border-b-2 border-transparent";
-                submitBtn.innerText = i18n[currentLang].register;
-            }
-        }
-
-        function handleAuth(e) {
-            e.preventDefault();
-            const username = document.getElementById('authUsername').value.trim();
-            const password = document.getElementById('authPassword').value;
-            const errDiv = document.getElementById('authError');
-
-            if (password.length < 8) {
-                errDiv.innerText = currentLang === 'zh-HK' ? "密碼必須為至少 8 位字元！" : "Password must be at least 8 characters.";
-                errDiv.classList.remove('hidden');
-                return;
-            }
-
-            if (authMode === 'register') {
-                if (usersData[username]) {
-                    errDiv.innerText = currentLang === 'zh-HK' ? "此 Username 已存在，請使用其他名稱！" : "Username already exists!";
-                    errDiv.classList.remove('hidden');
-                    return;
-                }
-                usersData[username] = {
-                    password: password,
-                    profile: null,
-                    logs: {},
-                    favorites: []
-                };
-                saveUsersData();
-                currentUser = username;
-                localStorage.setItem('fitsecret_active_user', currentUser);
-                checkSession();
-            } else {
-                if (!usersData[username] || usersData[username].password !== password) {
-                    errDiv.innerText = currentLang === 'zh-HK' ? "帳號或密碼不正確！" : "Invalid username or password.";
-                    errDiv.classList.remove('hidden');
-                    return;
-                }
-                currentUser = username;
-                localStorage.setItem('fitsecret_active_user', currentUser);
-                checkSession();
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('fitsecret_active_user');
-            checkSession();
-        }
-
-        function saveProfile(e) {
-            e.preventDefault();
-            const age = parseInt(document.getElementById('userAge').value);
-            const gender = document.getElementById('userGender').value;
-            const height = parseFloat(document.getElementById('userHeight').value);
-            const weight = parseFloat(document.getElementById('userWeight').value);
-            const activity = parseFloat(document.getElementById('userActivity').value);
-
-            const bmi = (weight / ((height / 100) * (height / 100))).toFixed(1);
-
-            let bmr = (10 * weight) + (6.25 * height) - (5 * age);
-            bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
-
-            const targetCal = Math.round(bmr * activity);
-
-            const user = getCurrentUserData();
-            user.profile = { age, gender, height, weight, activity, bmi, targetCal };
-            saveUsersData();
-
-            checkSession();
-        }
-
-        function editProfile() {
-            const user = getCurrentUserData();
-            if (user && user.profile) {
-                document.getElementById('userAge').value = user.profile.age;
-                document.getElementById('userGender').value = user.profile.gender;
-                document.getElementById('userHeight').value = user.profile.height;
-                document.getElementById('userWeight').value = user.profile.weight;
-                document.getElementById('userActivity').value = user.profile.activity;
-            }
-            document.getElementById('dashboardView').classList.add('hidden');
-            document.getElementById('profileSetupView').classList.remove('hidden');
-        }
-
-        function renderDashboard() {
-            const user = getCurrentUserData();
-            if (!user || !user.profile) return;
-
-            document.getElementById('headerTargetCal').innerText = user.profile.targetCal;
-            document.getElementById('textTargetCalSmall').innerText = `/ ${user.profile.targetCal} kcal`;
-            document.getElementById('headerBMI').innerText = user.profile.bmi;
-
-            const bmiVal = parseFloat(user.profile.bmi);
-            let bmiText = "(標準)";
-            if (bmiVal < 18.5) bmiText = "(過輕)";
-            else if (bmiVal >= 23 && bmiVal < 25) bmiText = "(過重)";
-            else if (bmiVal >= 25) bmiText = "(肥胖)";
-            document.getElementById('headerBMIBadge').innerText = bmiText;
-
-            if (!user.logs[selectedDate]) {
-                user.logs[selectedDate] = { food: [], exercise: [] };
-            }
-
-            const dayLogs = user.logs[selectedDate];
-
-            let totalConsumed = 0;
-            let totalProtein = 0;
-            let totalCarbs = 0;
-            let totalFat = 0;
-
-            dayLogs.food.forEach(item => {
-                totalConsumed += item.calories;
-                totalProtein += (item.protein || 0);
-                totalCarbs += (item.carbs || 0);
-                totalFat += (item.fat || 0);
-            });
-
-            let totalBurned = 0;
-            dayLogs.exercise.forEach(item => {
-                totalBurned += item.calories;
-            });
-
-            const targetCal = user.profile.targetCal;
-            const netTarget = targetCal + totalBurned;
-            const remaining = netTarget - totalConsumed;
-
-            document.getElementById('textConsumedBig').innerText = totalConsumed;
-            document.getElementById('valConsumedText').innerText = totalConsumed;
-            document.getElementById('valBurnedText').innerText = totalBurned;
-
-            const remDisplay = document.getElementById('textRemainingBig');
-            remDisplay.innerText = remaining;
-
-            document.getElementById('macroProtein').innerText = totalProtein.toFixed(1) + "g";
-            document.getElementById('macroCarbs').innerText = totalCarbs.toFixed(1) + "g";
-            document.getElementById('macroFat').innerText = totalFat.toFixed(1) + "g";
-
-            const circle = document.getElementById('svgCircleProgress');
-            const topBar = document.getElementById('topProgressBar');
-
-            let pct = Math.min(100, Math.max(0, (totalConsumed / netTarget)));
-            const dashOffset = 251.2 - (251.2 * pct);
-            circle.style.strokeDashoffset = dashOffset;
-
-            let topPct = Math.min(100, Math.max(0, Math.round((totalConsumed / netTarget) * 100)));
-            topBar.style.width = topPct + "%";
-
-            if (totalConsumed > netTarget) {
-                circle.setAttribute('class', 'text-rose-500 transition-all duration-700');
-                remDisplay.className = "text-3xl sm:text-4xl font-black text-rose-600 dark:text-rose-400 tracking-tight animate-pulse leading-none py-0.5";
-                topBar.className = "h-full bg-rose-500 transition-all duration-500";
-                
-                document.getElementById('suggestionText').innerText = currentLang === 'zh-HK' 
-                    ? `⚠️ 今日熱量已超標 ${Math.abs(remaining)} kcal！建議晚餐選擇輕食蔬菜湯，或進行 30 分鐘有氧運動。` 
-                    : `⚠️ Exceeded target by ${Math.abs(remaining)} kcal! Consider a light soup or 30-min cardio.`;
-            } else {
-                circle.setAttribute('class', 'text-purple-600 dark:text-purple-400 transition-all duration-700');
-                remDisplay.className = "text-3xl sm:text-4xl font-black text-purple-600 dark:text-purple-400 tracking-tight leading-none py-0.5";
-                topBar.className = "h-full bg-purple-600 dark:bg-purple-400 transition-all duration-500";
-
-                if (remaining > 800) {
-                    document.getElementById('suggestionText').innerText = currentLang === 'zh-HK'
-                        ? "還有許多卡路里額度，別忘了補充優質蛋白質（如雞胸肉、三文魚）與複合碳水化合物！"
-                        : "Plenty of calorie budget left. Make sure to get balanced protein and healthy carbs!";
-                } else if (remaining > 300) {
-                    document.getElementById('suggestionText').innerText = currentLang === 'zh-HK'
-                        ? "額度適中，晚餐推薦：蒸魚、無糖豆漿與一碗綠色蔬菜。"
-                        : "Good balance. Recommended dinner: steamed fish, unsweetened soy milk & green veggies.";
-                } else {
-                    document.getElementById('suggestionText').innerText = currentLang === 'zh-HK'
-                        ? "熱量接近上限！如果感到飢餓，可以選擇低卡高纖的水果或無糖高山茶。"
-                        : "Calorie limit nearby! If hungry, opt for low-calorie high-fiber snacks or green tea.";
-                }
-            }
-
-            renderFavorites();
-            renderLogsList();
-        }
-
-        function renderFavorites() {
-            const user = getCurrentUserData();
-            const container = document.getElementById('favoritesList');
-            if (!user.favorites || user.favorites.length === 0) {
-                container.innerHTML = `<span class="text-gray-400 italic text-[11px]">${i18n[currentLang].noFavorites}</span>`;
-                return;
-            }
-
-            container.innerHTML = user.favorites.map((item) => `
-                <button onclick='addFavoriteLog(${JSON.stringify(item)})' class="flex-shrink-0 bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200 px-3 py-1.5 rounded-xl flex items-center gap-1 hover:bg-purple-200 transition shadow-sm active:scale-95">
-                    <span class="font-bold text-xs">${item.name}</span>
-                    <span class="text-[10px] opacity-75">(${item.calories}kcal)</span>
-                </button>
-            `).join('');
-        }
-
-        function addFavoriteLog(item) {
-            const user = getCurrentUserData();
-            if (!user.logs[selectedDate]) user.logs[selectedDate] = { food: [], exercise: [] };
-            user.logs[selectedDate].food.push({
-                id: Date.now(),
-                name: item.name,
-                calories: item.calories,
-                protein: item.protein,
-                carbs: item.carbs,
-                fat: item.fat,
-                image: item.image || null
-            });
-            saveUsersData();
-            renderDashboard();
-        }
-
-        function toggleFavorite(foodItem) {
-            const user = getCurrentUserData();
-            if (!user.favorites) user.favorites = [];
-            
-            const existingIdx = user.favorites.findIndex(f => f.name === foodItem.name);
-            if (existingIdx >= 0) {
-                user.favorites.splice(existingIdx, 1);
-            } else {
-                user.favorites.push({
-                    name: foodItem.name,
-                    calories: foodItem.calories,
-                    protein: foodItem.protein,
-                    carbs: foodItem.carbs,
-                    fat: foodItem.fat,
-                    image: foodItem.image || null
-                });
-            }
-            saveUsersData();
-            renderDashboard();
-        }
-
-        function renderLogsList() {
-            const user = getCurrentUserData();
-            const container = document.getElementById('logsContainer');
-            const dayLogs = user.logs[selectedDate] || { food: [], exercise: [] };
-
-            if (dayLogs.food.length === 0 && dayLogs.exercise.length === 0) {
-                container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">${i18n[currentLang].noLogs}</div>`;
-                return;
-            }
-
-            let html = '';
-
-            dayLogs.food.forEach((item) => {
-                const isFav = user.favorites && user.favorites.some(f => f.name === item.name);
-                const hasImg = item.image ? true : false;
-
-                html += `
-                    <div class="bg-purple-50/70 dark:bg-purple-950/30 p-2.5 rounded-xl border border-purple-100 dark:border-purple-800/40 flex justify-between items-center text-xs hover:border-purple-300 transition">
-                        <div class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0" onclick='showFoodPhotoModal(${JSON.stringify(item)})'>
-                            ${hasImg 
-                                ? `<img src="${item.image}" class="w-10 h-10 rounded-lg object-cover border border-purple-200 flex-shrink-0">` 
-                                : `<div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold flex-shrink-0">🥗</div>`
-                            }
-                            <div class="space-y-0.5 truncate">
-                                <div class="flex items-center gap-1.5 truncate">
-                                    <span class="font-bold text-gray-800 dark:text-gray-100 truncate">${item.name}</span>
-                                    <button onclick='event.stopPropagation(); toggleFavorite(${JSON.stringify(item)})' class="focus:outline-none flex-shrink-0">
-                                        <i data-lucide="star" class="w-3.5 h-3.5 ${isFav ? 'text-amber-500 fill-amber-500' : 'text-gray-400'}"></i>
-                                    </button>
-                                </div>
-                                <div class="text-[10px] text-gray-500 dark:text-gray-400 flex gap-2">
-                                    <span>P: ${item.protein || 0}g</span>
-                                    <span>C: ${item.carbs || 0}g</span>
-                                    <span>F: ${item.fat || 0}g</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-1.5 flex-shrink-0 pl-2">
-                            <span class="font-black text-purple-700 dark:text-purple-300 text-xs sm:text-sm">+${item.calories} kcal</span>
-                            <button onclick="deleteLog('food', ${item.id})" class="text-gray-400 hover:text-red-500 p-1">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-
-            dayLogs.exercise.forEach((item) => {
-                html += `
-                    <div class="bg-indigo-50/70 dark:bg-indigo-950/30 p-2.5 rounded-xl border border-indigo-100 dark:border-indigo-800/40 flex justify-between items-center text-xs">
-                        <div class="space-y-0.5">
-                            <div class="flex items-center gap-1.5">
-                                <i data-lucide="activity" class="w-3.5 h-3.5 text-indigo-600"></i>
-                                <span class="font-bold text-gray-800 dark:text-gray-100">${item.name}</span>
-                            </div>
-                            <div class="text-[10px] text-gray-500 dark:text-gray-400">
-                                <span>${item.duration} mins</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-black text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">-${item.calories} kcal</span>
-                            <button onclick="deleteLog('exercise', ${item.id})" class="text-gray-400 hover:text-red-500 p-1">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
+        document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-        }
-
-        function showFoodPhotoModal(item) {
-            document.getElementById('modalFoodTitle').innerText = item.name;
-            document.getElementById('modalFoodCal').innerText = item.calories + " kcal";
-            document.getElementById('modalFoodProtein').innerText = (item.protein || 0) + "g";
-            document.getElementById('modalFoodCarbs').innerText = (item.carbs || 0) + "g";
-            document.getElementById('modalFoodFat').innerText = (item.fat || 0) + "g";
-
-            const imgContainer = document.getElementById('modalFoodImageContainer');
-            const img = document.getElementById('modalFoodImg');
-
-            if (item.image) {
-                img.src = item.image;
-                imgContainer.classList.remove('hidden');
-            } else {
-                imgContainer.classList.add('hidden');
-            }
-
-            openModal('foodPhotoModal');
-        }
-
-        function openExerciseListModal() {
-            const user = getCurrentUserData();
-            const container = document.getElementById('exerciseModalList');
-            const dayLogs = user?.logs[selectedDate] || { exercise: [] };
-
-            if (!dayLogs.exercise || dayLogs.exercise.length === 0) {
-                container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">今日尚未紀錄任何運動。</div>`;
-            } else {
-                container.innerHTML = dayLogs.exercise.map(item => `
-                    <div class="bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-800/40 flex justify-between items-center text-xs">
-                        <div>
-                            <div class="font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1">
-                                <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-600"></i> ${item.name}
-                            </div>
-                            <div class="text-[10px] text-gray-500">${item.duration} 分鐘</div>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-black text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">-${item.calories} kcal</span>
-                            <button onclick="deleteLog('exercise', ${item.id}); openExerciseListModal();" class="text-gray-400 hover:text-red-500 p-1">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-                lucide.createIcons();
-            }
-
-            openModal('exerciseListModal');
-        }
-
-        function deleteLog(type, id) {
-            const user = getCurrentUserData();
-            if (!user || !user.logs[selectedDate]) return;
-
-            user.logs[selectedDate][type] = user.logs[selectedDate][type].filter(x => x.id !== id);
-            saveUsersData();
-            renderDashboard();
-        }
-
-        function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
-        function closeUnrecognizedModal() {
-            document.getElementById('unrecognizedModal').classList.add('hidden');
-            document.getElementById('foodName').focus();
-        }
-
-        async function fetchGeminiAPI(payload, timeoutMs = 0) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-
-            const fetchPromise = fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }).then(res => {
-                if (!res.ok) throw new Error("API Error");
-                return res.json();
-            });
-
-            if (timeoutMs > 0) {
-                const timeoutPromise = new Promise((_, reject) => {
-                    setTimeout(() => reject(new Error("TIMEOUT")), timeoutMs);
-                });
-                return await Promise.race([fetchPromise, timeoutPromise]);
-            } else {
-                return await fetchPromise;
-            }
-        }
-
-        async function handleImageUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const previewContainer = document.getElementById('imagePreviewContainer');
-            const previewImg = document.getElementById('foodPreviewImg');
-            const spinner = document.getElementById('aiAnalyzingSpinner');
-
-            const reader = new FileReader();
-            reader.onload = async function(event) {
-                currentUploadedImageBase64 = event.target.result;
-                previewImg.src = currentUploadedImageBase64;
-                previewContainer.classList.remove('hidden');
-                spinner.classList.remove('hidden');
-
-                const base64Data = currentUploadedImageBase64.split(',')[1];
-
-                const prompt = "辨識圖片中的食物或飲品。請以繁體中文 (香港常用詞彙) 返回 JSON 格式，不要包含任何 markdown 標記，結構為：{\"name\": \"食物名稱\", \"calories\": 數字, \"protein\": 數字, \"carbs\": 數字, \"fat\": 數字}";
-
-                const payload = {
-                    contents: [{
-                        role: "user",
-                        parts: [
-                            { text: prompt },
-                            { inlineData: { mimeType: file.type || "image/jpeg", data: base64Data } }
-                        ]
-                    }],
-                    generationConfig: { responseMimeType: "application/json" }
-                };
-
-                try {
-                    // Strict 5 seconds timeout limit
-                    const result = await fetchGeminiAPI(payload, 5000);
-                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                    
-                    if (text) {
-                        const parsed = JSON.parse(text);
-                        if (parsed && parsed.name && parsed.name !== "未知食物") {
-                            document.getElementById('foodName').value = parsed.name;
-                            document.getElementById('foodCal').value = parsed.calories || 0;
-                            document.getElementById('foodProtein').value = parsed.protein || 0;
-                            document.getElementById('foodCarbs').value = parsed.carbs || 0;
-                            document.getElementById('foodFat').value = parsed.fat || 0;
-                            spinner.classList.add('hidden');
-                            return;
-                        }
-                    }
-                    throw new Error("RECOGNITION_FAILED");
-                } catch (err) {
-                    // Fail or > 5s timeout -> popup fallback notification box
-                    spinner.classList.add('hidden');
-                    openModal('unrecognizedModal');
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function autoEstimateNutrition(foodName) {
-            const name = foodName || document.getElementById('foodName').value.trim();
-            if (!name) return;
-
-            const statusElem = document.getElementById('autoCalcStatus');
-            statusElem.classList.remove('hidden');
-
-            const prompt = `估算食物「${name}」標準一份的卡路里(kcal)、蛋白質(g)、碳水化合物(g)、脂肪(g)。請回傳乾淨的 JSON 格式：{"calories": 數字, "protein": 數字, "carbs": 數字, "fat": 數字}`;
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { responseMimeType: "application/json" }
-            };
-
-            try {
-                const result = await fetchGeminiAPI(payload, 4000);
-                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (text) {
-                    const parsed = JSON.parse(text);
-                    document.getElementById('foodCal').value = parsed.calories !== undefined ? parsed.calories : 200;
-                    document.getElementById('foodProtein').value = parsed.protein !== undefined ? parsed.protein : 10;
-                    document.getElementById('foodCarbs').value = parsed.carbs !== undefined ? parsed.carbs : 25;
-                    document.getElementById('foodFat').value = parsed.fat !== undefined ? parsed.fat : 6;
-                }
-            } catch (err) {
-                // Heuristic backup fallback calculation if AI busy
-                if (!document.getElementById('foodCal').value) {
-                    document.getElementById('foodCal').value = 250;
-                    document.getElementById('foodProtein').value = 10;
-                    document.getElementById('foodCarbs').value = 30;
-                    document.getElementById('foodFat').value = 8;
-                }
-            } finally {
-                statusElem.classList.add('hidden');
-            }
-        }
-
-        function resetFoodForm() {
-            document.getElementById('foodName').value = "";
-            document.getElementById('foodCal').value = "";
-            document.getElementById('foodProtein').value = "";
-            document.getElementById('foodCarbs').value = "";
-            document.getElementById('foodFat').value = "";
-            currentUploadedImageBase64 = null;
-            document.getElementById('imagePreviewContainer').classList.add('hidden');
-            document.getElementById('autoCalcStatus').classList.add('hidden');
-        }
-
-        function submitFoodLog(e) {
-            if (e) e.preventDefault();
-            try {
-                const foodNameInput = document.getElementById('foodName');
-                const name = foodNameInput ? foodNameInput.value.trim() : '';
-
-                if (!name) {
-                    alert(currentLang === 'zh-HK' ? '請輸入食物或飲品名稱！' : 'Please enter food or drink name!');
-                    return;
-                }
-
-                const calInput = document.getElementById('foodCal');
-                let cal = parseFloat(calInput ? calInput.value : '');
-                if (isNaN(cal) || cal < 0) cal = 0;
-
-                const protein = parseFloat(document.getElementById('foodProtein')?.value) || 0;
-                const carbs = parseFloat(document.getElementById('foodCarbs')?.value) || 0;
-                const fat = parseFloat(document.getElementById('foodFat')?.value) || 0;
-
-                const user = getCurrentUserData();
-                if (!user) return;
-
-                if (!user.logs[selectedDate]) {
-                    user.logs[selectedDate] = { food: [], exercise: [] };
-                }
-
-                user.logs[selectedDate].food.push({
-                    id: Date.now(),
-                    name: name,
-                    calories: cal,
-                    protein: protein,
-                    carbs: carbs,
-                    fat: fat,
-                    image: currentUploadedImageBase64
-                });
-
-                saveUsersData();
-                closeModal('foodModal');
-                resetFoodForm();
-                renderDashboard();
-            } catch (err) {
-                console.error("Error submitting food log:", err);
-            }
-        }
-
-        function calcExerciseCalories() {
-            const select = document.getElementById('exerciseName');
-            if (!select || select.selectedIndex < 0) return 0;
-            const option = select.options[select.selectedIndex];
-            const met = parseFloat(option ? option.getAttribute('data-met') : "5") || 5;
-            const durationVal = document.getElementById('exerciseDuration')?.value;
-            const duration = parseFloat(durationVal) || 0;
-
-            const user = getCurrentUserData();
-            const weight = user?.profile?.weight || 65;
-
-            const burned = Math.round(met * weight * (duration / 60));
-            const burnElem = document.getElementById('calculatedBurn');
-            if (burnElem) {
-                burnElem.innerText = `${burned} kcal`;
-            }
-            return burned;
-        }
-
-        function submitExerciseLog(e) {
-            if (e) e.preventDefault();
-            try {
-                const select = document.getElementById('exerciseName');
-                const name = select ? select.value : '運動';
-                const durationInput = document.getElementById('exerciseDuration');
-                const duration = parseInt(durationInput ? durationInput.value : '30') || 0;
-                const burned = calcExerciseCalories();
-
-                const user = getCurrentUserData();
-                if (!user) return;
-
-                if (!user.logs[selectedDate]) {
-                    user.logs[selectedDate] = { food: [], exercise: [] };
-                }
-
-                user.logs[selectedDate].exercise.push({
-                    id: Date.now(),
-                    name: name,
-                    duration: duration,
-                    calories: burned
-                });
-
-                saveUsersData();
-                closeModal('exerciseModal');
-                renderDashboard();
-            } catch (err) {
-                console.error("Error submitting exercise log:", err);
-            }
-        }
-
-        function openAIChatModal() {
-            openModal('aiChatModal');
-            const chatContainer = document.getElementById('chatMessages');
-            if (chatContainer.children.length === 0) {
-                appendChatMessage('ai', currentLang === 'zh-HK' 
-                    ? "哈囉！我是 FitSecret 營養師「小編」👩‍⚕️！你可以隨時向我諮詢飲食營養、熱量評估或運動減脂問題！有咩想問我？"
-                    : "Hello! I am 'Editor', your FitSecret AI Nutritionist! Feel free to ask any diet or workout questions!");
-            }
-        }
-
-        function formatMarkdownText(text) {
-            if (!text) return "";
-            return text
-                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/^\s*-\s+/gm, '• ')
-                .replace(/\n/g, '<br>');
-        }
-
-        function appendChatMessage(role, text) {
-            const chatContainer = document.getElementById('chatMessages');
-            const isUser = role === 'user';
-            const formattedText = formatMarkdownText(text);
-            
-            const msgHtml = `
-                <div class="flex gap-2 ${isUser ? 'justify-end' : 'justify-start'}">
-                    ${!isUser ? `<div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] flex-shrink-0">👩‍⚕️</div>` : ''}
-                    <div class="max-w-[82%] p-2.5 rounded-2xl text-xs leading-relaxed ${isUser ? 'bg-purple-600 text-white rounded-tr-none' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow border border-purple-100 dark:border-purple-800 rounded-tl-none'}">
-                        ${formattedText}
-                    </div>
-                </div>
-            `;
-            chatContainer.insertAdjacentHTML('beforeend', msgHtml);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function appendChatTypingIndicator(id) {
-            const chatContainer = document.getElementById('chatMessages');
-            const msgHtml = `
-                <div id="${id}" class="flex gap-2 justify-start items-center">
-                    <div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] flex-shrink-0">👩‍⚕️</div>
-                    <div class="bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 p-2.5 rounded-2xl text-xs shadow border border-purple-100 dark:border-purple-800 rounded-tl-none flex items-center gap-1.5">
-                        <span class="font-medium">小編思考中</span>
-                        <span class="flex gap-1">
-                            <span class="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce"></span>
-                            <span class="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                            <span class="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce [animation-delay:0.4s]"></span>
-                        </span>
-                    </div>
-                </div>
-            `;
-            chatContainer.insertAdjacentHTML('beforeend', msgHtml);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function removeChatTypingIndicator(id) {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        }
-
-        function generateFallbackChatReply(text, user, totalCal) {
-            const targetCal = user?.profile?.targetCal || 2000;
-            const remaining = targetCal - totalCal;
-            const q = text.toLowerCase();
-
-            if (q.includes('晚餐') || q.includes('食咩') || q.includes('食乜') || q.includes('推介') || q.includes('建議') || q.includes('dinner')) {
-                if (remaining > 500) {
-                    return `今晚配額非常充足（仲有 **${remaining} kcal**）！\n\n建議晚餐搭配：\n1. **主菜**：香煎三文魚 / 蒸雞胸肉\n2. **蔬菜**：蒜蓉炒菜心 / 蒸西蘭花\n3. **澱粉**：半碗糙米飯或藜麥\n\n補足蛋白質與膳食纖維，健康又飽腹！`;
-                } else if (remaining > 0) {
-                    return `今日熱量剩餘 **${remaining} kcal**，建議選輕食晚餐：\n\n• 蒸魚切塊 / 白灼蝦\n• 涼拌青瓜與一碗蔬菜湯\n• 避免高油炸及濃醬汁，可順利達成今日目標！`;
-                } else {
-                    return `今日熱量已達標或略有超標！\n\n如果今晚覺得肚餓，建議選擇：\n• 一碗清熱蔬果湯（如蕃茄豆腐湯）\n• 無糖豆漿或少許低糖水果（藍莓/蘋果）\n避免高碳水與重油飲食即可！`;
-                }
-            }
-
-            if (q.includes('減肥') || q.includes('減脂') || q.includes('瘦身') || q.includes('weight')) {
-                return `要有效減脂，最核心係 **「熱量赤字」**（消耗卡路里 > 攝取卡路里）！\n\n小編給您的三大秘訣：\n1. **每餐先食蔬菜同蛋白質**，最後食澱粉，降低升糖指數。\n2. **多飲水**（每日至少 2000-2500ml），提升新陳代謝。\n3. **配合每週 3 次有氧 + 重訓**，保持肌肉量並持續燃脂！`;
-            }
-
-            if (q.includes('蛋白') || q.includes('雞胸') || q.includes('增肌') || q.includes('protein')) {
-                return `蛋白質係肌肉修復同維持基礎代謝嘅關鍵！\n\n• **每日建議攝取量**：體重 (kg) × 1.2 ~ 1.6 克\n• **優質來源**：雞胸肉、雞蛋、豆腐、三文魚、無糖豆漿。\n• **貼心提醒**：分開每餐平均攝取，吸收效果最好！`;
-            }
-
-            if (q.includes('運動') || q.includes('跑步') || q.includes('健身') || q.includes('exercise')) {
-                return `運動唔單止可以燃燒卡路里，仲可以提升心情同代謝率！\n\n• **有氧運動**（如跑步、跳繩）：快速增加熱量消耗。\n• **力量訓練**（如深蹲、俯臥撑）：增加肌肉量，提高基礎代謝率。\n記得做完運動後 30 分鐘內補充適量蛋白質同碳水化合物！`;
-            }
-
-            return `收到您嘅問題！小編建議您：\n\n• 您今日的目標熱量為 **${targetCal} kcal**，目前已攝取 **${totalCal} kcal**。\n• 均衡飲食（適量蛋白質、豐富膳食纖維、優質油脂）加上規律作息係維持健康的關鍵。\n\n如果有具體的食材或運動項目想評估，隨時告訴小編！`;
-        }
-
-        async function sendChatMessage() {
-            const input = document.getElementById('chatInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            appendChatMessage('user', text);
-            input.value = '';
-
-            const user = getCurrentUserData();
-            const dayLogs = user?.logs[selectedDate] || { food: [], exercise: [] };
-            let totalCal = 0;
-            if (dayLogs.food) {
-                dayLogs.food.forEach(f => totalCal += f.calories);
-            }
-
-            const loadingId = 'typing-' + Date.now();
-            appendChatTypingIndicator(loadingId);
-
-            let reply = "";
-
-            if (typeof apiKey !== 'undefined' && apiKey && apiKey.trim() !== "") {
-                const systemPrompt = `你叫「小編」，是 FitSecret 的專業廣東話/中文智能健康與營養師 AI。用家現時身高 ${user?.profile?.height||170}cm, 體重 ${user?.profile?.weight||65}kg, 每日目標卡路里為 ${user?.profile?.targetCal||2000} kcal。今日已攝取 ${totalCal} kcal。請用親切、專業、鼓勵性的口吻 (配合香港地區習慣) 解答用家的健康問題或提供餐點運動建議。`;
-
-                const payload = {
-                    contents: [{ parts: [{ text: text }] }],
-                    systemInstruction: { parts: [{ text: systemPrompt }] }
-                };
-
-                try {
-                    const result = await fetchGeminiAPI(payload, 8000);
-                    reply = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
-                } catch (err) {
-                    console.warn("API call failed, falling back to local smart assistant", err);
-                }
-            }
-
-            if (!reply) {
-                reply = generateFallbackChatReply(text, user, totalCal);
-            }
-
-            removeChatTypingIndicator(loadingId);
-            appendChatMessage('ai', reply);
-        }
+            initDatePicker();
+            checkSession();
+        });
 
         function toggleLanguage() {
-            currentLang = currentLang === 'zh-HK' ? 'en' : 'zh-HK';
-            document.getElementById('langBtn').innerText = currentLang === 'zh-HK' ? 'EN' : '中文';
-            
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (i18n[currentLang][key]) {
-                    el.innerText = i18n[currentLang][key];
-                }
-            });
-
-            renderDashboard();
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            document.getElementById('langBtn').innerText = currentLang === 'zh' ? 'EN' : '中';
+            updateTexts();
         }
 
         function toggleTheme() {
             const html = document.documentElement;
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
+                localStorage.setItem('fitsecret_theme', 'light');
             } else {
                 html.classList.add('dark');
+                localStorage.setItem('fitsecret_theme', 'dark');
             }
+        }
+
+        if (localStorage.getItem('fitsecret_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+
+        function updateTexts() {
+            const dict = i18nData[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.innerText = dict[key];
+                }
+            });
+            if (currentUser) renderDashboard();
+        }
+
+        function initDatePicker() {
+            const picker = document.getElementById('datePicker');
+            const todayStr = new Date().toISOString().split('T')[0];
+            picker.value = todayStr;
+            picker.max = todayStr;
+            picker.onchange = () => {
+                if (currentUser) renderDashboard();
+            };
+        }
+
+        function getSelectedDate() {
+            return document.getElementById('datePicker').value || new Date().toISOString().split('T')[0];
+        }
+
+        function switchAuthTab(mode) {
+            currentAuthMode = mode;
+            const tabLogin = document.getElementById('tabLogin');
+            const tabRegister = document.getElementById('tabRegister');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const errorDiv = document.getElementById('authError');
+            errorDiv.classList.add('hidden');
+
+            if (mode === 'login') {
+                tabLogin.className = "flex-1 pb-3 text-center font-bold text-sm text-purple-600 border-b-2 border-purple-600 dark:text-purple-400 dark:border-purple-400";
+                tabRegister.className = "flex-1 pb-3 text-center font-medium text-sm text-gray-400 border-b-2 border-transparent";
+                submitBtn.innerText = i18nData[currentLang].loginBtn;
+            } else {
+                tabRegister.className = "flex-1 pb-3 text-center font-bold text-sm text-purple-600 border-b-2 border-purple-600 dark:text-purple-400 dark:border-purple-400";
+                tabLogin.className = "flex-1 pb-3 text-center font-medium text-sm text-gray-400 border-b-2 border-transparent";
+                submitBtn.innerText = i18nData[currentLang].registerBtn;
+            }
+        }
+
+        function handleAuth(event) {
+            event.preventDefault();
+            const username = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const errorDiv = document.getElementById('authError');
+
+            if (!username || password.length < 8) {
+                errorDiv.innerText = currentLang === 'zh' ? '請輸入帳號與最少 8 位密碼' : 'Please enter username and min 8 chars password';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (currentAuthMode === 'register') {
+                if (usersDB[username]) {
+                    errorDiv.innerText = currentLang === 'zh' ? '此使用者名稱已被註冊，請直接登入' : 'Username already exists, please login';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                usersDB[username] = {
+                    password: password,
+                    profile: null,
+                    favorites: [],
+                    logs: {}
+                };
+                localStorage.setItem('fitsecret_users', JSON.stringify(usersDB));
+                currentUser = username;
+                localStorage.setItem('fitsecret_current', currentUser);
+                showProfileSetup();
+            } else {
+                if (!usersDB[username] || usersDB[username].password !== password) {
+                    errorDiv.innerText = currentLang === 'zh' ? '帳號或密碼錯誤' : 'Invalid username or password';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                currentUser = username;
+                localStorage.setItem('fitsecret_current', currentUser);
+                if (!usersDB[username].profile) {
+                    showProfileSetup();
+                } else {
+                    showDashboard();
+                }
+            }
+        }
+
+        function checkSession() {
+            const savedUser = localStorage.getItem('fitsecret_current');
+            if (savedUser && usersDB[savedUser]) {
+                currentUser = savedUser;
+                if (!usersDB[currentUser].profile) {
+                    showProfileSetup();
+                } else {
+                    showDashboard();
+                }
+            } else {
+                showAuth();
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('fitsecret_current');
+            showAuth();
+        }
+
+        function showAuth() {
+            document.getElementById('authView').classList.remove('hidden');
+            document.getElementById('profileSetupView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            document.getElementById('datePicker').classList.add('hidden');
+        }
+
+        function showProfileSetup() {
+            document.getElementById('authView').classList.add('hidden');
+            document.getElementById('profileSetupView').classList.remove('hidden');
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('datePicker').classList.add('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('authView').classList.add('hidden');
+            document.getElementById('profileSetupView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('datePicker').classList.remove('hidden');
+            renderDashboard();
+        }
+
+        function editProfile() {
+            const p = usersDB[currentUser].profile;
+            if (p) {
+                document.getElementById('userAge').value = p.age;
+                document.getElementById('userGender').value = p.gender;
+                document.getElementById('userHeight').value = p.height;
+                document.getElementById('userWeight').value = p.weight;
+                document.getElementById('userActivity').value = p.activity;
+            }
+            showProfileSetup();
+        }
+
+        function saveProfile(event) {
+            event.preventDefault();
+            const age = parseInt(document.getElementById('userAge').value);
+            const gender = document.getElementById('userGender').value;
+            const height = parseFloat(document.getElementById('userHeight').value);
+            const weight = parseFloat(document.getElementById('userWeight').value);
+            const activity = parseFloat(document.getElementById('userActivity').value);
+
+            // Harris-Benedict BMR Calculation
+            let bmr = (gender === 'male')
+                ? (88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age))
+                : (447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age));
+            
+            let tdee = Math.round(bmr * activity);
+            let bmi = (weight / Math.pow(height / 100, 2)).toFixed(1);
+
+            usersDB[currentUser].profile = { age, gender, height, weight, activity, targetCal: tdee, bmi };
+            localStorage.setItem('fitsecret_users', JSON.stringify(usersDB));
+
+            showDashboard();
+        }
+
+        function renderDashboard() {
+            const userData = usersDB[currentUser];
+            const p = userData.profile;
+            const dateStr = getSelectedDate();
+            if (!userData.logs[dateStr]) {
+                userData.logs[dateStr] = { foods: [], exercises: [] };
+            }
+            const dayLogs = userData.logs[dateStr];
+
+            // Calculate totals
+            let consumed = 0, burned = 0, protein = 0, carbs = 0, fat = 0;
+            dayLogs.foods.forEach(f => {
+                consumed += f.cal;
+                protein += f.protein;
+                carbs += f.carbs;
+                fat += f.fat;
+            });
+            dayLogs.exercises.forEach(e => {
+                burned += e.cal;
+            });
+
+            const targetCal = p.targetCal;
+            const remaining = targetCal - consumed + burned;
+
+            // Update Header & Ring
+            document.getElementById('headerTargetCal').innerText = targetCal;
+            document.getElementById('headerBMI').innerText = p.bmi;
+            
+            let bmiBadge = document.getElementById('headerBMIBadge');
+            let bmiVal = parseFloat(p.bmi);
+            if (bmiVal < 18.5) bmiBadge.innerText = "(體重過輕)";
+            else if (bmiVal < 24) bmiBadge.innerText = "(標準)";
+            else if (bmiVal < 28) bmiBadge.innerText = "(過重)";
+            else bmiBadge.innerText = "(肥胖)";
+
+            document.getElementById('textConsumedBig').innerText = consumed;
+            document.getElementById('textTargetCalSmall').innerText = `/ ${targetCal} kcal`;
+            document.getElementById('textRemainingBig').innerText = remaining;
+            document.getElementById('valConsumedText').innerText = `${consumed} kcal`;
+            document.getElementById('valBurnedText').innerText = `${burned} kcal`;
+
+            // Ring progress
+            let percent = Math.min(100, Math.round((consumed / targetCal) * 100));
+            document.getElementById('topProgressBar').style.width = `${percent}%`;
+            
+            const circle = document.getElementById('svgCircleProgress');
+            const circumference = 251.2;
+            const offset = circumference - (percent / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+
+            // Macros
+            document.getElementById('macroProtein').innerText = `${protein.toFixed(1)}g`;
+            document.getElementById('macroCarbs').innerText = `${carbs.toFixed(1)}g`;
+            document.getElementById('macroFat').innerText = `${fat.toFixed(1)}g`;
+
+            // Render Favorites
+            renderFavorites();
+
+            // Render Logs
+            renderLogsList(dayLogs);
+
+            // Update AI Suggestion
+            updateAISuggestionText(consumed, burned, targetCal);
+        }
+
+        function renderFavorites() {
+            const userData = usersDB[currentUser];
+            const favContainer = document.getElementById('favoritesList');
+            if (!userData.favorites || userData.favorites.length === 0) {
+                favContainer.innerHTML = `<span class="text-gray-400 italic text-[11px]">${i18nData[currentLang].noFavorites}</span>`;
+                return;
+            }
+            favContainer.innerHTML = userData.favorites.map((fav, idx) => `
+                <button onclick="quickAddFavorite(${idx})" class="flex-shrink-0 bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 px-3 py-1.5 rounded-xl text-left hover:bg-purple-100 transition active:scale-95">
+                    <span class="font-bold text-purple-900 dark:text-purple-200 block text-xs">${fav.name}</span>
+                    <span class="text-[10px] text-purple-600 dark:text-purple-400">${fav.cal} kcal (P:${fav.protein}g)</span>
+                </button>
+            `).join('');
+        }
+
+        function quickAddFavorite(idx) {
+            const userData = usersDB[currentUser];
+            const fav = userData.favorites[idx];
+            const dateStr = getSelectedDate();
+            userData.logs[dateStr].foods.push({ ...fav, id: Date.now() });
+            localStorage.setItem('fitsecret_users', JSON.stringify(usersDB));
+            renderDashboard();
+        }
+
+        function renderLogsList(dayLogs) {
+            const container = document.getElementById('logsContainer');
+            const totalItems = [...dayLogs.foods.map(f => ({...f, type: 'food'})), ...dayLogs.exercises.map(e => ({...e, type: 'exercise'}))];
+
+            if (totalItems.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">${i18nData[currentLang].noLogs}</div>`;
+                return;
+            }
+
+            container.innerHTML = totalItems.map(item => {
+                if (item.type === 'food') {
+                    const isFav = usersDB[currentUser].favorites.some(f => f.name === item.name);
+                    return `
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-purple-50/70 dark:bg-gray-800/60 border border-purple-100 dark:border-purple-900/40">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">🍽️</div>
+                                <div>
+                                    <h5 class="font-bold text-xs text-gray-900 dark:text-gray-100">${item.name}</h5>
+                                    <span class="text-[10px] text-gray-500">P:${item.protein}g | C:${item.carbs}g | F:${item.fat}g</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-extrabold text-xs text-purple-700 dark:text-purple-300">+${item.cal} kcal</span>
+                                <button onclick="toggleFavorite('${item.name}', ${item.cal}, ${item.protein}, ${item.carbs}, ${item.fat})" class="p-1 text-amber-500 hover:scale-110 transition">
+                                    <i data-lucide="star" class="w-4 h-4 ${isFav ? 'fill-amber-500' : ''}"></i>
+                                </button>
+                                <button onclick="deleteLog('food', ${item.id})" class="p-1 text-red-500 hover:scale-110 transition">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/40">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">⚡</div>
+                                <div>
+                                    <h5 class="font-bold text-xs text-gray-900 dark:text-gray-100">${item.name} (${item.duration} mins)</h5>
+                                    <span class="text-[10px] text-emerald-600 dark:text-emerald-400">運動消耗</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-extrabold text-xs text-emerald-600 dark:text-emerald-400">-${item.cal} kcal</span>
+                                <button onclick="deleteLog('exercise', ${item.id})" class="p-1 text-red-500 hover:scale-110 transition">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function toggleFavorite(name, cal, protein, carbs, fat) {
+            const favs = usersDB[currentUser].favorites;
+            const idx = favs.findIndex(f => f.name === name);
+            if (idx >= 0) {
+                favs.splice(idx, 1);
+            } else {
+                favs.push({ name, cal, protein, carbs, fat });
+            }
+            localStorage.setItem('fitsecret_users', JSON.stringify(usersDB));
+            renderDashboard();
+        }
+
+        function deleteLog(type, id) {
+            const dateStr = getSelectedDate();
+            const dayLogs = usersDB[currentUser].logs[dateStr];
+            if (type === 'food') {
+                dayLogs.foods = dayLogs.foods.filter(f => f.id !== id);
+            } else {
+                dayLogs.exercises = dayLogs.exercises.filter(e => e.id !== id);
+            }
+            localStorage.setItem('fitsecret_users', JSON.stringify(usersDB));
+            renderDashboard();
+        }
+
+        async function callGeminiAPI(payload) {
+            const activeKey = apiKey || "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${activeKey}`;
+            
+            for (let attempt = 0; attempt < 3; attempt++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) return text;
+                } catch (e) {
+                    await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 1000));
+                }
+            }
+            return null;
+        }
+
+        // Live auto-estimate as user types food name
+        let typingTimer;
+        document.getElementById('foodName').addEventListener('input', (e) => {
+            clearTimeout(typingTimer);
+            const val = e.target.value.trim();
+            if (val.length < 2) return;
+            
+            typingTimer = setTimeout(async () => {
+                const status = document.getElementById('autoCalcStatus');
+                status.classList.remove('hidden');
+
+                const prompt = `Estimate the nutrition for one standard portion of "${val}". Return strictly valid JSON with keys: "name" (string), "cal" (number), "protein" (number in grams), "carbs" (number in grams), "fat" (number in grams). No markdown codeblocks.`;
+                const resText = await callGeminiAPI({
+                    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                    generationConfig: { responseMimeType: "application/json" }
+                });
+
+                status.classList.add('hidden');
+                if (resText) {
+                    try {
+                        const data = JSON.parse(resText.replace(/```json/g, '').replace(/```/g, '').trim());
+                        document.getElementById('foodCal').value = Math.round(data.cal || 300);
+                        document.getElementById('foodProtein').value = data.protein || 15;
+                        document.getElementById('foodCarbs').value = data.carbs || 30;
+                        document.getElementById('foodFat').value = data.fat || 10;
+                    } catch (err) {}
+                }
+            }, 800);
+        });
+
+        // AI Image Upload & Recognition
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Data = e.target.result.split(',')[1];
+                const mimeType = file.type;
+
+                document.getElementById('foodPreviewImg').src = e.target.result;
+                document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                document.getElementById('aiAnalyzingSpinner').classList.remove('hidden');
+
+                const prompt = `Analyze this food image. Identify the food item and estimate its nutrition. Return strictly valid JSON with keys: "name" (string in Traditional Chinese), "cal" (number), "protein" (number in grams), "carbs" (number in grams), "fat" (number in grams). No markdown.`;
+                
+                const payload = {
+                    contents: [{
+                        role: 'user',
+                        parts: [
+                            { text: prompt },
+                            { inlineData: { mimeType, data: base64Data } }
+                        ]
+                    }],
+                    generationConfig: { responseMimeType: "application/json" }
+                };
+
+                const resText = await callGeminiAPI(payload);
+                document.getElementById('aiAnalyzingSpinner').classList.add('hidden');
+
+                if (resText) {
+                    try {
+                        const data = JSON.parse(resText.replace(/```json/g, '').replace(/```/g, '').trim());
+                        document.getElementById('foodName').value = data.name || 'AI辨識食物';
+                        document.getElementById('foodCal').value = Math.round(data.cal || 400);
+                        document.getElementById('foodProtein').value = data.protein || 20;
+                        document.getElementById('foodCarbs').value = data.carbs || 45;
+                        document.getElementById('foodFat').value = data.fat || 12;
+                    } catch (err) {
+                        alert('AI 辨識解析失敗，請手動輸入數值。');
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function submitFoodLog(event) {
+            event.preventDefault();
+            const name = document.getElementById('foodName').value.trim();
+            const cal = parseInt(document.getElementById('foodCal').value) || 0;
+            const protein = parseFloat(document.getElementById('foodProtein').value) || 0;
+            const carbs = parseFloat(document.getElementById('foodCarbs').value) || 0;
+            const fat = parseFloat(document.getElementById('foodFat').value) || 0;
+
+            if (!name) return;
+
+            const dateStr = getSelectedDate();
+            usersDB[currentUser].logs[dateStr].foods.push({
+                id: Date.now(),
+                name, cal, protein, carbs, fat
+            });
+            localStorage.setItem('fitsecret_users', JSON.stringify(usersDB));
+
+            closeModal('foodModal');
+            document.getElementById('foodForm').reset();
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+            renderDashboard();
+        }
+
+        function estimateExerciseCalories() {
+            const type = document.getElementById('exerciseType').value;
+            const duration = parseInt(document.getElementById('exerciseDuration').value) || 30;
+            const weight = usersDB[currentUser]?.profile?.weight || 65;
+
+            // MET values roughly estimated
+            const metMap = { running: 9.8, cycling: 7.5, swimming: 8.0, hiit: 10.0, weightlifting: 5.5, yoga: 3.0, walking: 4.0 };
+            const met = metMap[type] || 6.0;
+            const calories = Math.round((met * 3.5 * weight / 200) * duration);
+            document.getElementById('exerciseCalories').value = calories;
+        }
+
+        function submitExerciseLog(event) {
+            event.preventDefault();
+            const typeSelect = document.getElementById('exerciseType');
+            const name = typeSelect.options[typeSelect.selectedIndex].text;
+            const duration = parseInt(document.getElementById('exerciseDuration').value) || 30;
+            const cal = parseInt(document.getElementById('exerciseCalories').value) || 200;
+
+            const dateStr = getSelectedDate();
+            usersDB[currentUser].logs[dateStr].exercises.push({
+                id: Date.now(),
+                name, duration, cal
+            });
+            localStorage.setItem('fitsecret_users', JSON.stringify(usersDB));
+
+            closeModal('exerciseModal');
+            renderDashboard();
+        }
+
+        async function updateAISuggestionText(consumed, burned, target) {
+            const diff = target - consumed + burned;
+            let prompt = `User daily target: ${target} kcal, Consumed: ${consumed} kcal, Burned: ${burned} kcal, Remaining: ${diff} kcal. Give a short, encouraging, professional health/diet tip in Traditional Chinese (max 2 sentences).`;
+            const text = await callGeminiAPI({ contents: [{ role: 'user', parts: [{ text: prompt }] }] });
+            if (text) {
+                document.getElementById('suggestionText').innerText = text.trim();
+            }
+        }
+
+        async function sendAIChatMessage(event) {
+            event.preventDefault();
+            const inputEl = document.getElementById('chatInput');
+            const msg = inputEl.value.trim();
+            if (!msg) return;
+
+            const chatContainer = document.getElementById('chatMessages');
+            chatContainer.innerHTML += `
+                <div class="flex gap-2 justify-end">
+                    <div class="bg-purple-600 text-white p-3 rounded-2xl shadow-sm max-w-[85%] leading-relaxed">${msg}</div>
+                    <div class="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white flex items-center justify-center font-bold flex-shrink-0 text-[10px]">我</div>
+                </div>
+            `;
+            inputEl.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            const userData = usersDB[currentUser];
+            const p = userData.profile;
+            const sysPrompt = `You are FitSecret AI health assistant. User profile: Age ${p.age}, Gender ${p.gender}, Height ${p.height}cm, Weight ${p.weight}kg, Daily target ${p.targetCal} kcal. Provide professional, concise, encouraging advice in Traditional Chinese.`;
+
+            const resText = await callGeminiAPI({
+                systemInstruction: { parts: [{ text: sysPrompt }] },
+                contents: [{ role: 'user', parts: [{ text: msg }] }]
+            });
+
+            const reply = resText || "收到！建議保持均衡飲食與規律運動，如有任何體重管理疑問隨時問我！";
+            chatContainer.innerHTML += `
+                <div class="flex gap-2">
+                    <div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold flex-shrink-0 text-[10px]">AI</div>
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border border-purple-100 dark:border-purple-700 text-gray-800 dark:text-gray-200 leading-relaxed max-w-[85%]">${reply}</div>
+                </div>
+            `;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            if (id === 'exerciseModal') estimateExerciseCalories();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function openAIChatModal() {
+            openModal('aiChatModal');
+        }
+
+        function openExerciseListModal() {
+            const dateStr = getSelectedDate();
+            const exercises = usersDB[currentUser].logs[dateStr]?.exercises || [];
+            const container = document.getElementById('exerciseLogsContainer');
+            
+            if (exercises.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">${i18nData[currentLang].noExerciseLogs}</div>`;
+            } else {
+                container.innerHTML = exercises.map(e => `
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/40">
+                        <div>
+                            <h5 class="font-bold text-xs text-gray-900 dark:text-gray-100">${e.name}</h5>
+                            <span class="text-[10px] text-gray-500">時長: ${e.duration} 分鐘</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-xs text-emerald-600 dark:text-emerald-400">-${e.cal} kcal</span>
+                            <button onclick="deleteLog('exercise', ${e.id}); openExerciseListModal();" class="p-1 text-red-500 hover:scale-110 transition">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            }
+            openModal('exerciseListModal');
         }
     </script>
 </body>
