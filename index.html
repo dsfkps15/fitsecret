@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitSecret - 智能卡路里 & 運動管家 (網頁版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            user-select: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .ips-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.08), 0 8px 10px -6px rgba(124, 58, 237, 0.04);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .dark .ips-card {
+            background: #1e293b;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .web-frame {
+            max-width: 480px;
+            width: 100%;
+            min-height: 850px;
+            margin: 0 auto;
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8b5cf6;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-6 min-h-screen bg-slate-100 dark:bg-slate-950 flex justify-center items-center">
+
+    <!-- 1. AUTH CONTAINER (LOGIN / REGISTER) -->
+    <div id="auth-container" class="web-frame bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 p-6 flex flex-col justify-center space-y-6">
+        <div class="text-center space-y-2">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 mb-2">
+                <i class="fa-solid fa-fire-flame-curved text-3xl"></i>
+            </div>
+            <h1 class="text-2xl font-black bg-gradient-to-r from-brand-600 to-purple-800 dark:from-brand-400 dark:to-purple-300 bg-clip-text text-transparent">
+                FitSecret 網頁版
+            </h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">智能卡路里 & 運動管家</p>
+        </div>
+
+        <!-- Auth Tabs -->
+        <div class="flex border-b border-slate-200 dark:border-slate-800 text-sm font-bold">
+            <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-2 text-brand-600 border-b-2 border-brand-600 dark:text-brand-400 dark:border-brand-400">會員登入</button>
+            <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">極速註冊</button>
+        </div>
+
+        <!-- Auth Alert Message -->
+        <div id="auth-error-msg" class="hidden p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400 rounded-xl text-xs font-semibold flex items-center space-x-2">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span id="auth-error-text">錯誤訊息</span>
+        </div>
+
+        <!-- Auth Form -->
+        <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">使用者名稱 (Username)</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-solid fa-user text-xs"></i></span>
+                    <input type="text" id="auth-username" required placeholder="請輸入 Username" class="w-full pl-9 pr-3 py-2.5 text-xs border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">密碼 (Password - 至少8個字元)</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-solid fa-lock text-xs"></i></span>
+                    <input type="password" id="auth-password" required minlength="8" placeholder="任意英文 / 數字 / 符號 (≥8字)" class="w-full pl-9 pr-3 py-2.5 text-xs border border-slate-300 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <button type="submit" id="auth-submit-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl text-xs shadow-md shadow-brand-500/20 transition">
+                立即登入
+            </button>
+        </form>
+    </div>
+
+    <!-- 2. MAIN APP CONTAINER (HIDDEN UNTIL LOGGED IN) -->
+    <div id="app-container" class="hidden web-frame flex flex-col relative bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 pb-20">
+        
+        <!-- Top Header Navigation -->
+        <header class="px-4 py-3 flex justify-between items-center bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur sticky top-0 z-20 border-b border-slate-200/50 dark:border-slate-800">
+            <div>
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-fire-flame-curved text-brand-600 dark:text-brand-500 text-xl"></i>
+                    <h1 class="text-xl font-extrabold bg-gradient-to-r from-brand-600 to-purple-800 dark:from-brand-400 dark:to-purple-300 bg-clip-text text-transparent">
+                        FitSecret
+                    </h1>
+                </div>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium" data-i18n="subtitle">智能卡路里 & 運動管家</p>
+            </div>
+
+            <!-- Header Tools -->
+            <div class="flex items-center space-x-2">
+                <!-- User Tag & Logout -->
+                <button onclick="logout()" class="px-2.5 py-1 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-rose-500 hover:text-white dark:hover:bg-rose-600 transition flex items-center space-x-1" title="登出">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span id="header-username">User</span>
+                </button>
+
+                <!-- Theme Switcher -->
+                <button onclick="toggleDarkMode()" class="p-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-amber-400 text-xs hover:scale-105 transition" title="Theme Switcher">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+
+                <!-- Language Switcher -->
+                <button onclick="toggleLanguage()" class="px-2 py-1 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:scale-105 transition" id="lang-btn">
+                    EN
+                </button>
+
+                <!-- Date Picker Button -->
+                <div class="relative">
+                    <input type="date" id="date-picker" onchange="handleDateChange(this.value)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10">
+                    <button class="flex items-center space-x-1 bg-brand-50 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 px-2 py-1 rounded-xl border border-brand-200 dark:border-brand-800 text-xs font-semibold">
+                        <i class="fa-regular fa-calendar-days text-[11px]"></i>
+                        <span id="date-display">Today</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Scrollable Area -->
+        <main class="flex-1 overflow-y-auto px-4 py-3 space-y-3.5">
+            
+            <!-- User Profile Target Summary Card -->
+            <div onclick="openProfileModal()" class="cursor-pointer bg-brand-50/70 dark:bg-slate-800/80 hover:bg-brand-100/70 dark:hover:bg-slate-800 p-3 rounded-2xl border border-brand-200/60 dark:border-brand-900/50 flex items-center justify-between transition">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium" data-i18n="profileGoalTitle">個人目標數據</div>
+                        <div class="text-xs font-bold text-slate-800 dark:text-slate-100" id="profile-summary">
+                            目標: 1850 kcal | BMI 21.3 (標準)
+                        </div>
+                    </div>
+                </div>
+                <div class="text-slate-400 text-xs flex items-center space-x-1">
+                    <span data-i18n="editBtn">設定</span>
+                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </div>
+            </div>
+
+            <!-- Over Budget Alert Banner -->
+            <div id="over-budget-alert" class="hidden bg-red-500 text-white p-3 rounded-2xl shadow-lg shadow-red-500/20 flex items-center space-x-3 animate-pulse">
+                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                <div>
+                    <h4 class="font-bold text-xs" data-i18n="alertTitle">⚠️ 當日熱量已超越目標額度！</h4>
+                    <p class="text-[11px] text-red-100" data-i18n="alertDesc">建議適量增加運動消耗熱量，或控制晚間飲食。</p>
+                </div>
+            </div>
+
+            <!-- Dashboard IPS Card -->
+            <div class="ips-card p-4 space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <!-- Gauge Ring -->
+                    <div class="relative w-28 h-28 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                            <circle class="text-brand-100 dark:text-slate-700" stroke-width="10" stroke="currentColor" fill="transparent" r="38" cx="50" cy="50" />
+                            <circle id="progress-circle" class="text-brand-600 dark:text-brand-500 progress-ring-circle" stroke-width="10" stroke-dasharray="238.76" stroke-dashoffset="238.76" stroke-linecap="round" stroke="currentColor" fill="transparent" r="38" cx="50" cy="50" />
+                        </svg>
+                        <div class="absolute flex flex-col items-center justify-center text-center">
+                            <span id="consumed-calories" class="text-xl font-black text-slate-800 dark:text-slate-100 leading-none">0</span>
+                            <span id="target-calories-sub" class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">/ 1850 kcal</span>
+                        </div>
+                    </div>
+
+                    <!-- Calorie Math Details -->
+                    <div class="flex-1 ml-4 flex flex-col justify-center space-y-1">
+                        <span class="text-xs font-medium text-slate-400 dark:text-slate-400" data-i18n="netRemaining">剩餘熱量配額</span>
+                        <div id="remaining-calories" class="text-3xl font-black text-brand-600 dark:text-brand-400 leading-tight">
+                            1850
+                        </div>
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400 flex items-center space-x-2">
+                            <span><i class="fa-solid fa-utensils text-rose-500"></i> <span id="eaten-text">攝取 0</span></span>
+                            <span><i class="fa-solid fa-bolt text-emerald-500"></i> <span id="burned-text">消耗 0</span></span>
+                        </div>
+
+                        <!-- Linear Progress Bar -->
+                        <div class="w-full bg-brand-100 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden mt-1">
+                            <div id="linear-progress" class="bg-brand-600 dark:bg-brand-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-100 dark:border-slate-800">
+
+                <!-- Macros Breakdown -->
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-blue-50/80 dark:bg-blue-950/30 p-2 rounded-xl border border-blue-100 dark:border-blue-900/40">
+                        <span class="text-[10px] text-slate-400 block font-medium" data-i18n="protein">蛋白質</span>
+                        <span id="protein-total" class="text-xs font-bold text-blue-600 dark:text-blue-400">0.0g</span>
+                    </div>
+                    <div class="bg-amber-50/80 dark:bg-amber-950/30 p-2 rounded-xl border border-amber-100 dark:border-amber-900/40">
+                        <span class="text-[10px] text-slate-400 block font-medium" data-i18n="carbs">碳水化合物</span>
+                        <span id="carbs-total" class="text-xs font-bold text-amber-600 dark:text-amber-400">0.0g</span>
+                    </div>
+                    <div class="bg-rose-50/80 dark:bg-rose-950/30 p-2 rounded-xl border border-rose-100 dark:border-rose-900/40">
+                        <span class="text-[10px] text-slate-400 block font-medium" data-i18n="fat">脂肪</span>
+                        <span id="fat-total" class="text-xs font-bold text-rose-600 dark:text-rose-400">0.0g</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Built-in Pedometer Step Tracker Card -->
+            <div class="ips-card p-3.5 bg-gradient-to-br from-emerald-50/60 to-teal-50/40 dark:from-emerald-950/20 dark:to-slate-900 border-emerald-200/60 dark:border-emerald-900/40 space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-sm shadow-sm">
+                            <i class="fa-solid fa-person-walking"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-800 dark:text-slate-100" data-i18n="stepCounter">即時步數計數器 (Pedometer)</h3>
+                            <p class="text-[10px] text-slate-400" id="step-calories-text">已消耗約 0 kcal</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleStepTracking()" id="step-toggle-btn" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow-sm">
+                        <i class="fa-solid fa-play mr-1"></i><span data-i18n="start">開始計步</span>
+                    </button>
+                </div>
+
+                <div class="flex items-baseline justify-between pt-1">
+                    <div class="flex items-baseline space-x-1">
+                        <span id="step-count-display" class="text-2xl font-black text-emerald-600 dark:text-emerald-400">0</span>
+                        <span class="text-xs text-slate-400" id="step-goal-text">/ 8000 步</span>
+                    </div>
+                    <button onclick="addManualSteps()" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                        + <span data-i18n="addManualSteps">手動增加 1000 步</span>
+                    </button>
+                </div>
+
+                <div class="w-full bg-emerald-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div id="step-progress-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Dynamic Gemini Meal Suggestion Box -->
+            <div class="ips-card p-3.5 bg-brand-50/50 dark:bg-slate-800/50 border-brand-200/70 dark:border-brand-900/50 space-y-1.5">
+                <div class="flex items-center space-x-1.5 text-brand-700 dark:text-brand-300 font-bold text-xs">
+                    <i class="fa-solid fa-wand-magic-sparkles text-brand-600 dark:text-brand-400"></i>
+                    <span data-i18n="aiSuggestionTitle">智能餐點 & 運動建議</span>
+                </div>
+                <p id="gemini-suggestion-text" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    載入中...
+                </p>
+            </div>
+
+            <!-- Favorites Bar -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between px-1">
+                    <div class="flex items-center space-x-1.5">
+                        <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                        <h3 class="text-xs font-bold text-slate-700 dark:text-slate-300" data-i18n="favTitle">我的最愛食物 (一鍵快捷新增)</h3>
+                    </div>
+                </div>
+                <div id="favorites-container" class="flex space-x-2 overflow-x-auto pb-1 scrollbar-none">
+                    <!-- Favorite items inserted dynamically -->
+                </div>
+            </div>
+
+            <!-- Food Log List -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between px-1">
+                    <h3 class="text-xs font-bold text-slate-700 dark:text-slate-300" data-i18n="todayFoodLog">今日飲食紀錄</h3>
+                    <span id="food-entry-count" class="text-[10px] text-slate-400 font-medium">0 筆</span>
+                </div>
+
+                <div id="empty-food-log" class="ips-card p-6 text-center space-y-1.5">
+                    <i class="fa-solid fa-utensils text-brand-400 text-2xl"></i>
+                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400" data-i18n="emptyFood">今天尚未紀錄食物</p>
+                </div>
+
+                <div id="food-entries-list" class="space-y-2">
+                    <!-- Dynamic food items -->
+                </div>
+            </div>
+
+            <!-- Exercise Log List -->
+            <div class="space-y-2 pt-2">
+                <div class="flex items-center justify-between px-1">
+                    <h3 class="text-xs font-bold text-slate-700 dark:text-slate-300" data-i18n="todayExerciseLog">今日運動紀錄</h3>
+                    <span id="exercise-entry-count" class="text-[10px] text-slate-400 font-medium">0 筆</span>
+                </div>
+
+                <div id="empty-exercise-log" class="ips-card p-6 text-center space-y-1.5">
+                    <i class="fa-solid fa-person-running text-emerald-400 text-2xl"></i>
+                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400" data-i18n="emptyExercise">今天尚未紀錄運動</p>
+                </div>
+
+                <div id="exercise-entries-list" class="space-y-2">
+                    <!-- Dynamic exercise items -->
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Action Bar -->
+        <div class="absolute bottom-0 left-0 right-0 p-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200/60 dark:border-slate-800 grid grid-cols-2 gap-2 z-10">
+            <button onclick="openRecognitionModal()" class="bg-gradient-to-r from-brand-600 to-purple-700 hover:opacity-95 text-white py-3 px-3 rounded-2xl font-bold shadow-md shadow-brand-500/20 active:scale-95 transition flex items-center justify-center space-x-1.5 text-xs">
+                <i class="fa-solid fa-camera text-sm"></i>
+                <span data-i18n="addFoodBtn">相片辨識食物</span>
+            </button>
+            <button onclick="openExerciseModal()" class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-95 text-white py-3 px-3 rounded-2xl font-bold shadow-md shadow-emerald-500/20 active:scale-95 transition flex items-center justify-center space-x-1.5 text-xs">
+                <i class="fa-solid fa-dumbbell text-sm"></i>
+                <span data-i18n="addExerciseBtn">新增運動紀錄</span>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- MODAL 1: AI Food Recognition Modal -->
+    <div id="recognition-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base" data-i18n="aiFoodTitle">AI 相片辨識食物</h3>
+                <button onclick="closeRecognitionModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Image Selection Demo Area -->
+            <div class="space-y-2.5">
+                <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400" data-i18n="selectSample">選擇示範食物或上傳照片：</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="sampleRecognize('海南雞飯')" class="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 border rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 text-center">
+                        🍗 海南雞飯
+                    </button>
+                    <button onclick="sampleRecognize('凍檸茶少甜')" class="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 border rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 text-center">
+                        🍋 凍檸茶
+                    </button>
+                    <button onclick="sampleRecognize('三文魚沙律')" class="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 border rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 text-center">
+                        🥗 三文魚沙律
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="ai-loading" class="hidden py-8 text-center space-y-3">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-brand-600 border-t-transparent"></div>
+                <p class="text-xs font-semibold text-brand-700 dark:text-brand-400" data-i18n="aiAnalyzing">Gemini AI 正在辨識營養成分...</p>
+            </div>
+
+            <!-- Result Box -->
+            <div id="ai-result-card" class="hidden ips-card p-4 space-y-3 bg-slate-50 dark:bg-slate-800">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-[10px] text-slate-400 font-bold block uppercase" data-i18n="recognitionResult">辨識結果</span>
+                        <h4 id="res-food-name" class="text-lg font-extrabold text-slate-800 dark:text-slate-100">--</h4>
+                    </div>
+                    <button id="res-fav-btn" onclick="togglePendingFavorite()" class="text-slate-300 text-xl hover:text-amber-400 transition">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-4 gap-2 text-center bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                    <div>
+                        <span class="text-[10px] text-slate-400 block" data-i18n="calories">卡路里</span>
+                        <span id="res-calories" class="text-sm font-black text-brand-600 dark:text-brand-400">0</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block" data-i18n="protein">蛋白質</span>
+                        <span id="res-protein" class="text-xs font-bold text-slate-700 dark:text-slate-300">0g</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block" data-i18n="carbs">碳水</span>
+                        <span id="res-carbs" class="text-xs font-bold text-slate-700 dark:text-slate-300">0g</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block" data-i18n="fat">脂肪</span>
+                        <span id="res-fat" class="text-xs font-bold text-slate-700 dark:text-slate-300">0g</span>
+                    </div>
+                </div>
+
+                <!-- "我唔係食呢個" Manual Override Button -->
+                <button onclick="toggleOverrideInput()" class="w-full py-2 text-xs font-semibold text-amber-600 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 border border-amber-200 dark:border-amber-900/60 rounded-xl transition flex items-center justify-center space-x-1">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span data-i18n="notEatingThis">我唔係食呢個 (手動修正食物名稱)</span>
+                </button>
+
+                <!-- Override Input Field -->
+                <div id="override-container" class="hidden space-y-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                    <input type="text" id="override-food-input" placeholder="請輸入正確食物名稱..." class="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-700 dark:bg-slate-900 rounded-xl">
+                    <button onclick="submitManualOverride()" class="w-full py-2 bg-brand-600 text-white rounded-xl text-xs font-bold" data-i18n="recalculate">
+                        重新計算卡路里
+                    </button>
+                </div>
+
+                <button onclick="confirmAddEntry()" class="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-xl font-bold text-xs shadow-md shadow-brand-500/20 transition" data-i18n="addLog">
+                    新增至今日飲食紀錄
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Add Exercise Modal -->
+    <div id="exercise-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base" data-i18n="addExerciseTitle">新增運動紀錄</h3>
+                <button onclick="closeExerciseModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" data-i18n="selectExercise">選擇運動項目</label>
+                    <select id="exercise-type" onchange="calculateExerciseCalories()" class="w-full px-3 py-2 text-xs border rounded-xl dark:bg-slate-800 dark:border-slate-700">
+                        <option value="running">🏃 戶外跑步 (Running ~8.5 kcal/分)</option>
+                        <option value="gym">🏋️ 重量訓練 / 健身 (Gym Workout ~6 kcal/分)</option>
+                        <option value="cycling">🚴 單車運動 (Cycling ~7 kcal/分)</option>
+                        <option value="swimming">🏊 游泳 (Swimming ~9 kcal/分)</option>
+                        <option value="hiit">🔥 HIIT 高強度間歇 (HIIT ~10 kcal/分)</option>
+                        <option value="yoga">🧘 瑜伽 / 伸展 (Yoga ~3.5 kcal/分)</option>
+                        <option value="badminton">🏸 羽毛球 / 球類 (Badminton ~7.5 kcal/分)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" data-i18n="exerciseDuration">運動時間 (分鐘)</label>
+                    <input type="number" id="exercise-duration" value="30" min="1" oninput="calculateExerciseCalories()" class="w-full px-3 py-2 text-xs border rounded-xl dark:bg-slate-800 dark:border-slate-700">
+                </div>
+
+                <div class="bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-2xl border border-emerald-200 dark:border-emerald-900/60 flex items-center justify-between">
+                    <span class="text-xs text-slate-600 dark:text-slate-300 font-medium" data-i18n="estimatedBurn">預計消耗卡路里：</span>
+                    <span id="calculated-ex-calories" class="text-base font-extrabold text-emerald-600 dark:text-emerald-400">255 kcal</span>
+                </div>
+
+                <button onclick="confirmAddExercise()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-xs shadow-md transition" data-i18n="confirmAddExercise">
+                    新增運動並扣減卡路里
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: User Profile Settings Modal -->
+    <div id="profile-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base" data-i18n="profileModalTitle">FitSecret 個人設定 & 熱量計算器</h3>
+                <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="profile-form" class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" data-i18n="age">年齡 (歲)</label>
+                        <input type="number" id="user-age" value="25" oninput="recalculateProfile()" class="w-full px-3 py-2 text-xs border rounded-xl dark:bg-slate-800 dark:border-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" data-i18n="gender">性別</label>
+                        <select id="user-gender" onchange="recalculateProfile()" class="w-full px-3 py-2 text-xs border rounded-xl dark:bg-slate-800 dark:border-slate-700">
+                            <option value="female" data-i18n="female">女士</option>
+                            <option value="male" data-i18n="male">男士</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" data-i18n="height">身高 (cm)</label>
+                        <input type="number" id="user-height" value="165" oninput="recalculateProfile()" class="w-full px-3 py-2 text-xs border rounded-xl dark:bg-slate-800 dark:border-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" data-i18n="weight">體重 (kg)</label>
+                        <input type="number" id="user-weight" value="58" oninput="recalculateProfile()" class="w-full px-3 py-2 text-xs border rounded-xl dark:bg-slate-800 dark:border-slate-700">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" data-i18n="activityLevel">每週運動頻率</label>
+                    <select id="user-activity" onchange="recalculateProfile()" class="w-full px-3 py-2 text-xs border rounded-xl dark:bg-slate-800 dark:border-slate-700">
+                        <option value="1.2" data-i18n="act1">久坐少動 (沒運動)</option>
+                        <option value="1.375" data-i18n="act2">輕度活動 (週1-3天)</option>
+                        <option value="1.55" selected data-i18n="act3">中度活動 (週3-5天)</option>
+                        <option value="1.725" data-i18n="act4">高度活動 (週6-7天)</option>
+                        <option value="1.9" data-i18n="act5">極高強度 (重訓/運動員)</option>
+                    </select>
+                </div>
+
+                <!-- Calculated Output Card -->
+                <div class="bg-brand-50 dark:bg-slate-800 p-3.5 rounded-2xl border border-brand-200 dark:border-slate-700 space-y-2 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600 dark:text-slate-400" data-i18n="bmiLabel">現時 BMI:</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200"><span id="calc-bmi">21.3</span> (<span id="calc-bmi-status" class="text-green-600">標準</span>)</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600 dark:text-slate-400" data-i18n="bmrLabel">基礎代謝率 (BMR):</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200" id="calc-bmr">1320 kcal</span>
+                    </div>
+                    <hr class="border-brand-200 dark:border-slate-700">
+                    <div class="flex justify-between items-center font-extrabold text-sm text-brand-700 dark:text-brand-400">
+                        <span data-i18n="tdeeLabel">每日目標熱量 (TDEE):</span>
+                        <span id="calc-tdee">1850 kcal</span>
+                    </div>
+                </div>
+
+                <button type="button" onclick="saveProfileSettings()" class="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-xl font-bold text-xs shadow-md transition" data-i18n="saveBtn">
+                    儲存變更
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- INTERNATIONALIZATION (i18n) DICTIONARY ---
+        const translations = {
+            zh: {
+                subtitle: "智能卡路里 & 運動管家",
+                profileGoalTitle: "個人目標數據",
+                editBtn: "設定",
+                alertTitle: "⚠️ 當日熱量已超越目標額度！",
+                alertDesc: "建議適量增加運動消耗熱量，或控制晚間飲食。",
+                netRemaining: "剩餘熱量配額",
+                protein: "蛋白質",
+                carbs: "碳水化合物",
+                fat: "脂肪",
+                stepCounter: "即時步數計數器 (Pedometer)",
+                start: "開始計步",
+                stop: "停止計步",
+                addManualSteps: "手動增加 1000 步",
+                aiSuggestionTitle: "智能餐點 & 運動建議",
+                favTitle: "我的最愛食物 (一鍵快捷新增)",
+                todayFoodLog: "今日飲食紀錄",
+                emptyFood: "今天尚未紀錄食物",
+                todayExerciseLog: "今日運動紀錄",
+                emptyExercise: "今天尚未紀錄運動",
+                addFoodBtn: "相片辨識食物",
+                addExerciseBtn: "新增運動紀錄",
+                aiFoodTitle: "AI 相片辨識食物",
+                selectSample: "選擇示範食物或上傳照片：",
+                aiAnalyzing: "Gemini AI 正在辨識營養成分...",
+                recognitionResult: "辨識結果",
+                calories: "卡路里",
+                notEatingThis: "我唔係食呢個 (手動修正食物名稱)",
+                recalculate: "重新計算卡路里",
+                addLog: "新增至今日飲食紀錄",
+                addExerciseTitle: "新增運動紀錄",
+                selectExercise: "選擇運動項目",
+                exerciseDuration: "運動時間 (分鐘)",
+                estimatedBurn: "預計消耗卡路里：",
+                confirmAddExercise: "新增運動並扣減卡路里",
+                profileModalTitle: "FitSecret 個人設定 & 熱量計算器",
+                age: "年齡 (歲)",
+                gender: "性別",
+                female: "女士",
+                male: "男士",
+                height: "身高 (cm)",
+                weight: "體重 (kg)",
+                activityLevel: "每週運動頻率",
+                act1: "久坐少動 (沒運動)",
+                act2: "輕度活動 (週1-3天)",
+                act3: "中度活動 (週3-5天)",
+                act4: "高度活動 (週6-7天)",
+                act5: "極高強度 (重訓/運動員)",
+                bmiLabel: "現時 BMI:",
+                bmrLabel: "基礎代謝率 (BMR):",
+                tdeeLabel: "每日目標熱量 (TDEE):",
+                saveBtn: "儲存變更"
+            },
+            en: {
+                subtitle: "Smart Calorie & Fitness Companion",
+                profileGoalTitle: "Personal Goals",
+                editBtn: "Edit",
+                alertTitle: "⚠️ Calorie limit exceeded for today!",
+                alertDesc: "Consider doing some exercise or reducing your dinner portion.",
+                netRemaining: "Calories Remaining",
+                protein: "Protein",
+                carbs: "Carbs",
+                fat: "Fat",
+                stepCounter: "Real-time Pedometer",
+                start: "Start Steps",
+                stop: "Stop Steps",
+                addManualSteps: "Add 1000 Steps Manually",
+                aiSuggestionTitle: "AI Meal & Exercise Advice",
+                favTitle: "Favorite Foods (Quick Add)",
+                todayFoodLog: "Today's Meal Log",
+                emptyFood: "No meals logged today",
+                todayExerciseLog: "Today's Workout Log",
+                emptyExercise: "No exercises logged today",
+                addFoodBtn: "Photo Food AI",
+                addExerciseBtn: "Log Workout",
+                aiFoodTitle: "AI Photo Food Recognition",
+                selectSample: "Select sample food or photo:",
+                aiAnalyzing: "Gemini AI is analyzing nutrients...",
+                recognitionResult: "Recognition Result",
+                calories: "Calories",
+                notEatingThis: "Correction / Change Food Name",
+                recalculate: "Recalculate Calories",
+                addLog: "Add to Meal Log",
+                addExerciseTitle: "Log Exercise",
+                selectExercise: "Select Workout Type",
+                exerciseDuration: "Duration (mins)",
+                estimatedBurn: "Estimated Calories Burned:",
+                confirmAddExercise: "Add Exercise Log",
+                profileModalTitle: "FitSecret Profile & TDEE Calculator",
+                age: "Age",
+                gender: "Gender",
+                female: "Female",
+                male: "Male",
+                height: "Height (cm)",
+                weight: "Weight (kg)",
+                activityLevel: "Weekly Exercise Frequency",
+                act1: "Sedentary (Little or no exercise)",
+                act2: "Lightly Active (1-3 days/week)",
+                act3: "Moderately Active (3-5 days/week)",
+                act4: "Very Active (6-7 days/week)",
+                act5: "Extra Active (Athlete/Physical Job)",
+                bmiLabel: "Current BMI:",
+                bmrLabel: "BMR Rate:",
+                tdeeLabel: "Daily Target (TDEE):",
+                saveBtn: "Save Changes"
+            }
+        };
+
+        // --- GLOBAL APP STATE ---
+        let currentLang = 'zh';
+        let currentUser = null;
+        let selectedDate = new Date().toISOString().split('T')[0];
+        let authMode = 'login'; // 'login' or 'register'
+
+        // Pedometer State
+        let isStepTracking = false;
+        let stepWatchId = null;
+
+        // Pending AI Recognized Item
+        let pendingFoodItem = null;
+
+        // Default Mock DB
+        const foodDatabase = {
+            "海南雞飯": { name: "海南雞飯", calories: 650, protein: 28, carbs: 75, fat: 25 },
+            "凍檸茶少甜": { name: "凍檸茶(少甜)", calories: 120, protein: 0, carbs: 30, fat: 0 },
+            "三文魚沙律": { name: "三文魚沙律", calories: 380, protein: 24, carbs: 12, fat: 22 },
+            "火腿蛋文治": { name: "火腿蛋三文治", calories: 320, protein: 14, carbs: 32, fat: 15 },
+            "白飯": { name: "白飯 (1碗)", calories: 220, protein: 4, carbs: 50, fat: 0.5 },
+            "美式咖啡": { name: "美式黑咖啡", calories: 10, protein: 0.5, carbs: 1, fat: 0 }
+        };
+
+        const exerciseMet = {
+            running: { name: "戶外跑步", rate: 8.5 },
+            gym: { name: "重量訓練 / 健身", rate: 6.0 },
+            cycling: { name: "單車運動", rate: 7.0 },
+            swimming: { name: "游泳", rate: 9.0 },
+            hiit: { name: "HIIT 高強度間歇", rate: 10.0 },
+            yoga: { name: "瑜伽 / 伸展", rate: 3.5 },
+            badminton: { name: "羽毛球 / 球類", rate: 7.5 }
+        };
+
+        // --- AUTHENTICATION MODULE ---
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('fitsecret_users') || '{}');
+        }
+
+        function switchAuthTab(mode) {
+            authMode = mode;
+            document.getElementById('auth-error-msg').classList.add('hidden');
+            const loginBtn = document.getElementById('tab-login-btn');
+            const regBtn = document.getElementById('tab-register-btn');
+            const submitBtn = document.getElementById('auth-submit-btn');
+
+            if (mode === 'login') {
+                loginBtn.className = "flex-1 py-2 text-brand-600 border-b-2 border-brand-600 dark:text-brand-400 dark:border-brand-400";
+                regBtn.className = "flex-1 py-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200";
+                submitBtn.innerText = "立即登入";
+            } else {
+                regBtn.className = "flex-1 py-2 text-brand-600 border-b-2 border-brand-600 dark:text-brand-400 dark:border-brand-400";
+                loginBtn.className = "flex-1 py-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200";
+                submitBtn.innerText = "完成極速註冊";
+            }
+        }
+
+        function showAuthError(msg) {
+            const errBox = document.getElementById('auth-error-msg');
+            document.getElementById('auth-error-text').innerText = msg;
+            errBox.classList.remove('hidden');
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const username = document.getElementById('auth-username').value.trim();
+            const password = document.getElementById('auth-password').value;
+
+            if (!username) {
+                showAuthError("請輸入 Username！");
+                return;
+            }
+            if (password.length < 8) {
+                showAuthError("密碼必須至少為 8 個字元！");
+                return;
+            }
+
+            const users = getUsers();
+
+            if (authMode === 'register') {
+                if (users[username]) {
+                    showAuthError("此 Username 已有人使用，請更換一個！");
+                    return;
+                }
+                // Save new user profile default
+                users[username] = {
+                    password: password,
+                    profile: { age: 25, gender: 'female', height: 165, weight: 58, activity: 1.55, tdee: 1850 },
+                    favorites: ["海南雞飯", "凍檸茶少甜", "三文魚沙律"]
+                };
+                localStorage.setItem('fitsecret_users', JSON.stringify(users));
+                loginUser(username);
+            } else {
+                // Login
+                if (!users[username] || users[username].password !== password) {
+                    showAuthError("Username 或密碼錯誤，請重新輸入！");
+                    return;
+                }
+                loginUser(username);
+            }
+        }
+
+        function loginUser(username) {
+            currentUser = username;
+            localStorage.setItem('fitsecret_active_user', username);
+            document.getElementById('header-username').innerText = username;
+            
+            // Switch UI
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+
+            // Load user data
+            initUserData();
+            updateDashboard();
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('fitsecret_active_user');
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('auth-container').classList.remove('hidden');
+            document.getElementById('auth-username').value = '';
+            document.getElementById('auth-password').value = '';
+        }
+
+        // --- USER DATA PERSISTENCE ---
+        function getUserDataKey() {
+            return `fitsecret_data_${currentUser}_${selectedDate}`;
+        }
+
+        function getUserProfile() {
+            const users = getUsers();
+            return users[currentUser]?.profile || { age: 25, gender: 'female', height: 165, weight: 58, activity: 1.55, tdee: 1850 };
+        }
+
+        function saveUserProfile(profile) {
+            const users = getUsers();
+            if (users[currentUser]) {
+                users[currentUser].profile = profile;
+                localStorage.setItem('fitsecret_users', JSON.stringify(users));
+            }
+        }
+
+        function getUserFavorites() {
+            const users = getUsers();
+            return users[currentUser]?.favorites || ["海南雞飯", "凍檸茶少甜"];
+        }
+
+        function toggleFavoriteInProfile(foodName) {
+            const users = getUsers();
+            if (!users[currentUser]) return;
+            let favs = users[currentUser].favorites || [];
+            if (favs.includes(foodName)) {
+                favs = favs.filter(f => f !== foodName);
+            } else {
+                favs.push(foodName);
+            }
+            users[currentUser].favorites = favs;
+            localStorage.setItem('fitsecret_users', JSON.stringify(users));
+            renderFavorites();
+        }
+
+        function getDailyLog() {
+            const raw = localStorage.getItem(getUserDataKey());
+            return raw ? JSON.parse(raw) : { foods: [], exercises: [], steps: 0 };
+        }
+
+        function saveDailyLog(log) {
+            localStorage.setItem(getUserDataKey(), JSON.stringify(log));
+            updateDashboard();
+        }
+
+        // --- DASHBOARD CALCULATIONS & RENDER ---
+        function updateDashboard() {
+            const log = getDailyLog();
+            const profile = getUserProfile();
+
+            let totalEaten = 0;
+            let totalProtein = 0;
+            let totalCarbs = 0;
+            let totalFat = 0;
+
+            log.foods.forEach(f => {
+                totalEaten += f.calories;
+                totalProtein += f.protein || 0;
+                totalCarbs += f.carbs || 0;
+                totalFat += f.fat || 0;
+            });
+
+            let totalBurned = 0;
+            log.exercises.forEach(e => {
+                totalBurned += e.calories;
+            });
+
+            // Step calories (~0.04 kcal per step)
+            const stepBurn = Math.round((log.steps || 0) * 0.04);
+            totalBurned += stepBurn;
+
+            const targetTdee = profile.tdee || 1850;
+            const netRemaining = targetTdee - totalEaten + totalBurned;
+
+            // UI Elements Update
+            document.getElementById('consumed-calories').innerText = Math.round(totalEaten);
+            document.getElementById('target-calories-sub').innerText = `/ ${targetTdee} kcal`;
+            document.getElementById('remaining-calories').innerText = Math.round(netRemaining);
+
+            document.getElementById('eaten-text').innerText = `攝取 ${Math.round(totalEaten)}`;
+            document.getElementById('burned-text').innerText = `消耗 ${Math.round(totalBurned)}`;
+
+            document.getElementById('protein-total').innerText = `${totalProtein.toFixed(1)}g`;
+            document.getElementById('carbs-total').innerText = `${totalCarbs.toFixed(1)}g`;
+            document.getElementById('fat-total').innerText = `${totalFat.toFixed(1)}g`;
+
+            // Progress Circle & Line
+            const percent = Math.min(Math.round((totalEaten / targetTdee) * 100), 100);
+            document.getElementById('linear-progress').style.width = `${percent}%`;
+
+            const circumference = 238.76;
+            const strokeOffset = circumference - (percent / 100) * circumference;
+            document.getElementById('progress-circle').style.strokeDashoffset = strokeOffset;
+
+            // Over budget alert
+            const alertBox = document.getElementById('over-budget-alert');
+            if (totalEaten > targetTdee + totalBurned) {
+                alertBox.classList.remove('hidden');
+            } else {
+                alertBox.classList.add('hidden');
+            }
+
+            // Steps Display
+            document.getElementById('step-count-display').innerText = log.steps || 0;
+            document.getElementById('step-calories-text').innerText = `已消耗約 ${stepBurn} kcal`;
+            const stepPercent = Math.min(Math.round(((log.steps || 0) / 8000) * 100), 100);
+            document.getElementById('step-progress-bar').style.width = `${stepPercent}%`;
+
+            // Render Lists
+            renderFoodList(log.foods);
+            renderExerciseList(log.exercises);
+            renderFavorites();
+            generateAISuggestion(totalEaten, totalBurned, targetTdee);
+        }
+
+        function renderFoodList(foods) {
+            const list = document.getElementById('food-entries-list');
+            const empty = document.getElementById('empty-food-log');
+            document.getElementById('food-entry-count').innerText = `${foods.length} 筆`;
+
+            if (foods.length === 0) {
+                empty.classList.remove('hidden');
+                list.innerHTML = '';
+                return;
+            }
+
+            empty.classList.add('hidden');
+            list.innerHTML = foods.map((item, idx) => `
+                <div class="ips-card p-3 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-xl bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-xs">
+                            <i class="fa-solid fa-utensils"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100">${item.name}</h4>
+                            <span class="text-[10px] text-slate-400">P:${item.protein}g | C:${item.carbs}g | F:${item.fat}g</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-black text-brand-600 dark:text-brand-400">+${item.calories} kcal</span>
+                        <button onclick="deleteFoodEntry(${idx})" class="text-slate-300 hover:text-rose-500 text-xs p-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderExerciseList(exercises) {
+            const list = document.getElementById('exercise-entries-list');
+            const empty = document.getElementById('empty-exercise-log');
+            document.getElementById('exercise-entry-count').innerText = `${exercises.length} 筆`;
+
+            if (exercises.length === 0) {
+                empty.classList.remove('hidden');
+                list.innerHTML = '';
+                return;
+            }
+
+            empty.classList.add('hidden');
+            list.innerHTML = exercises.map((item, idx) => `
+                <div class="ips-card p-3 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-300 flex items-center justify-center font-bold text-xs">
+                            <i class="fa-solid fa-person-running"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100">${item.name}</h4>
+                            <span class="text-[10px] text-slate-400">時間: ${item.duration} 分鐘</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-black text-emerald-600 dark:text-emerald-400">-${item.calories} kcal</span>
+                        <button onclick="deleteExerciseEntry(${idx})" class="text-slate-300 hover:text-rose-500 text-xs p-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFavorites() {
+            const favContainer = document.getElementById('favorites-container');
+            const userFavs = getUserFavorites();
+
+            if (userFavs.length === 0) {
+                favContainer.innerHTML = `<span class="text-[11px] text-slate-400 py-1">未有最愛食物，請點擊相片辨識右上角的 ★ 新增。</span>`;
+                return;
+            }
+
+            favContainer.innerHTML = userFavs.map(fname => {
+                const item = foodDatabase[fname] || { name: fname, calories: 300, protein: 10, carbs: 30, fat: 10 };
+                return `
+                    <button onclick='quickAddFavorite(${JSON.stringify(item)})' class="flex-shrink-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-brand-500 p-2 rounded-xl flex items-center space-x-2 transition text-left">
+                        <div class="w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-500 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div>
+                            <div class="text-[11px] font-bold text-slate-700 dark:text-slate-200">${item.name}</div>
+                            <div class="text-[9px] text-brand-600 dark:text-brand-400 font-semibold">${item.calories} kcal</div>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function generateAISuggestion(eaten, burned, target) {
+            const box = document.getElementById('gemini-suggestion-text');
+            const remain = target - eaten + burned;
+
+            if (eaten === 0) {
+                box.innerText = "💡 早安！建議早餐選擇高蛋白質食物（如雞蛋、燕麥），為你的一天提供持續能量。";
+            } else if (remain < 0) {
+                box.innerText = `⚠️ 今日卡路里已超標 ${Math.abs(Math.round(remain))} kcal。建議今晚進行 30 分鐘輕量跑步或快步走，助你平衡熱量！`;
+            } else if (remain > 500) {
+                box.innerText = `✨ 表現極佳！你還有 ${Math.round(remain)} kcal 的配額。晚餐可以放心補充優質蛋白質（如煎三文魚或雞胸肉沙律）。`;
+            } else {
+                box.innerText = `👍 攝取控制得十分標準！剩餘 ${Math.round(remain)} kcal 配額，適合搭配一杯無糖豆漿或一份水果。`;
+            }
+        }
+
+        // --- ACTIONS & MODAL LOGIC ---
+        function handleDateChange(val) {
+            if (!val) return;
+            selectedDate = val;
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date-display').innerText = (val === today) ? "Today" : val;
+            updateDashboard();
+        }
+
+        function quickAddFavorite(item) {
+            const log = getDailyLog();
+            log.foods.push(item);
+            saveDailyLog(log);
+        }
+
+        function deleteFoodEntry(idx) {
+            const log = getDailyLog();
+            log.foods.splice(idx, 1);
+            saveDailyLog(log);
+        }
+
+        function deleteExerciseEntry(idx) {
+            const log = getDailyLog();
+            log.exercises.splice(idx, 1);
+            saveDailyLog(log);
+        }
+
+        // --- AI RECOGNITION MODAL ---
+        function openRecognitionModal() {
+            document.getElementById('recognition-modal').classList.remove('hidden');
+            document.getElementById('ai-result-card').classList.add('hidden');
+            document.getElementById('ai-loading').classList.add('hidden');
+        }
+
+        function closeRecognitionModal() {
+            document.getElementById('recognition-modal').classList.add('hidden');
+        }
+
+        function sampleRecognize(foodKey) {
+            document.getElementById('ai-loading').classList.remove('hidden');
+            document.getElementById('ai-result-card').classList.add('hidden');
+
+            setTimeout(() => {
+                document.getElementById('ai-loading').classList.add('hidden');
+                document.getElementById('ai-result-card').classList.remove('hidden');
+
+                const item = foodDatabase[foodKey] || { name: foodKey, calories: 400, protein: 15, carbs: 45, fat: 12 };
+                pendingFoodItem = { ...item };
+
+                document.getElementById('res-food-name').innerText = pendingFoodItem.name;
+                document.getElementById('res-calories').innerText = pendingFoodItem.calories;
+                document.getElementById('res-protein').innerText = `${pendingFoodItem.protein}g`;
+                document.getElementById('res-carbs').innerText = `${pendingFoodItem.carbs}g`;
+                document.getElementById('res-fat').innerText = `${pendingFoodItem.fat}g`;
+
+                // Update Star state
+                const userFavs = getUserFavorites();
+                const favBtn = document.getElementById('res-fav-btn');
+                if (userFavs.includes(pendingFoodItem.name)) {
+                    favBtn.className = "text-amber-400 text-xl transition";
+                } else {
+                    favBtn.className = "text-slate-300 text-xl hover:text-amber-400 transition";
+                }
+            }, 800);
+        }
+
+        function toggleOverrideInput() {
+            const container = document.getElementById('override-container');
+            container.classList.toggle('hidden');
+        }
+
+        function submitManualOverride() {
+            const newName = document.getElementById('override-food-input').value.trim();
+            if (!newName) return;
+
+            // Simple mock recalculation algorithm based on string length/preset
+            const mockedItem = foodDatabase[newName] || {
+                name: newName,
+                calories: Math.floor(Math.random() * 300) + 200,
+                protein: Math.floor(Math.random() * 20) + 5,
+                carbs: Math.floor(Math.random() * 40) + 10,
+                fat: Math.floor(Math.random() * 15) + 2
+            };
+
+            pendingFoodItem = { ...mockedItem };
+            document.getElementById('res-food-name').innerText = pendingFoodItem.name;
+            document.getElementById('res-calories').innerText = pendingFoodItem.calories;
+            document.getElementById('res-protein').innerText = `${pendingFoodItem.protein}g`;
+            document.getElementById('res-carbs').innerText = `${pendingFoodItem.carbs}g`;
+            document.getElementById('res-fat').innerText = `${pendingFoodItem.fat}g`;
+
+            document.getElementById('override-container').classList.add('hidden');
+            document.getElementById('override-food-input').value = '';
+        }
+
+        function togglePendingFavorite() {
+            if (!pendingFoodItem) return;
+            toggleFavoriteInProfile(pendingFoodItem.name);
+            const favBtn = document.getElementById('res-fav-btn');
+            const userFavs = getUserFavorites();
+            if (userFavs.includes(pendingFoodItem.name)) {
+                favBtn.className = "text-amber-400 text-xl transition";
+            } else {
+                favBtn.className = "text-slate-300 text-xl hover:text-amber-400 transition";
+            }
+        }
+
+        function confirmAddEntry() {
+            if (!pendingFoodItem) return;
+            const log = getDailyLog();
+            log.foods.push(pendingFoodItem);
+            saveDailyLog(log);
+            closeRecognitionModal();
+        }
+
+        // --- EXERCISE MODAL ---
+        function openExerciseModal() {
+            document.getElementById('exercise-modal').classList.remove('hidden');
+            calculateExerciseCalories();
+        }
+
+        function closeExerciseModal() {
+            document.getElementById('exercise-modal').classList.add('hidden');
+        }
+
+        function calculateExerciseCalories() {
+            const typeKey = document.getElementById('exercise-type').value;
+            const duration = parseInt(document.getElementById('exercise-duration').value) || 0;
+            const met = exerciseMet[typeKey] || { rate: 6.0 };
+            const calories = Math.round(met.rate * duration);
+            document.getElementById('calculated-ex-calories').innerText = `${calories} kcal`;
+        }
+
+        function confirmAddExercise() {
+            const typeKey = document.getElementById('exercise-type').value;
+            const duration = parseInt(document.getElementById('exercise-duration').value) || 0;
+            const met = exerciseMet[typeKey] || { name: "運動", rate: 6.0 };
+            const calories = Math.round(met.rate * duration);
+
+            if (duration <= 0) return;
+
+            const log = getDailyLog();
+            log.exercises.push({
+                name: met.name,
+                duration: duration,
+                calories: calories
+            });
+
+            saveDailyLog(log);
+            closeExerciseModal();
+        }
+
+        // --- PEDOMETER STEP COUNTER ---
+        function toggleStepTracking() {
+            const btn = document.getElementById('step-toggle-btn');
+            if (!isStepTracking) {
+                isStepTracking = true;
+                btn.innerHTML = `<i class="fa-solid fa-pause mr-1"></i><span data-i18n="stop">${translations[currentLang].stop}</span>`;
+                btn.className = "px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition shadow-sm";
+
+                // Simulate step counting interval
+                stepWatchId = setInterval(() => {
+                    const log = getDailyLog();
+                    log.steps = (log.steps || 0) + Math.floor(Math.random() * 5) + 1;
+                    saveDailyLog(log);
+                }, 2000);
+            } else {
+                isStepTracking = false;
+                clearInterval(stepWatchId);
+                btn.innerHTML = `<i class="fa-solid fa-play mr-1"></i><span data-i18n="start">${translations[currentLang].start}</span>`;
+                btn.className = "px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow-sm";
+            }
+        }
+
+        function addManualSteps() {
+            const log = getDailyLog();
+            log.steps = (log.steps || 0) + 1000;
+            saveDailyLog(log);
+        }
+
+        // --- USER PROFILE & TDEE MODAL ---
+        function openProfileModal() {
+            const profile = getUserProfile();
+            document.getElementById('user-age').value = profile.age || 25;
+            document.getElementById('user-gender').value = profile.gender || 'female';
+            document.getElementById('user-height').value = profile.height || 165;
+            document.getElementById('user-weight').value = profile.weight || 58;
+            document.getElementById('user-activity').value = profile.activity || 1.55;
+
+            recalculateProfile();
+            document.getElementById('profile-modal').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.add('hidden');
+        }
+
+        function recalculateProfile() {
+            const age = parseInt(document.getElementById('user-age').value) || 25;
+            const gender = document.getElementById('user-gender').value;
+            const height = parseFloat(document.getElementById('user-height').value) || 165;
+            const weight = parseFloat(document.getElementById('user-weight').value) || 58;
+            const act = parseFloat(document.getElementById('user-activity').value) || 1.55;
+
+            // BMI Calculation
+            const bmi = (weight / ((height / 100) * (height / 100))).toFixed(1);
+            let bmiStatus = "標準";
+            let bmiColor = "text-green-600";
+            if (bmi < 18.5) { bmiStatus = "過輕"; bmiColor = "text-amber-500"; }
+            else if (bmi >= 24) { bmiStatus = "偏重"; bmiColor = "text-rose-500"; }
+
+            // BMR Calculation (Mifflin-St Jeor)
+            let bmr = (10 * weight) + (6.25 * height) - (5 * age);
+            bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
+            bmr = Math.round(bmr);
+
+            // TDEE
+            const tdee = Math.round(bmr * act);
+
+            document.getElementById('calc-bmi').innerText = bmi;
+            const statusEl = document.getElementById('calc-bmi-status');
+            statusEl.innerText = bmiStatus;
+            statusEl.className = bmiColor;
+
+            document.getElementById('calc-bmr').innerText = `${bmr} kcal`;
+            document.getElementById('calc-tdee').innerText = `${tdee} kcal`;
+
+            return { age, gender, height, weight, activity: act, tdee, bmi, bmiStatus };
+        }
+
+        function saveProfileSettings() {
+            const calculated = recalculateProfile();
+            saveUserProfile(calculated);
+            
+            document.getElementById('profile-summary').innerText = `目標: ${calculated.tdee} kcal | BMI ${calculated.bmi} (${calculated.bmiStatus})`;
+            updateDashboard();
+            closeProfileModal();
+        }
+
+        // --- THEME & LANGUAGE SWITCHER ---
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const icon = document.getElementById('theme-icon');
+            if (document.documentElement.classList.contains('dark')) {
+                icon.className = "fa-solid fa-sun";
+            } else {
+                icon.className = "fa-solid fa-moon";
+            }
+        }
+
+        function toggleLanguage() {
+            currentLang = (currentLang === 'zh') ? 'en' : 'zh';
+            document.getElementById('lang-btn').innerText = (currentLang === 'zh') ? 'EN' : '中文';
+
+            // Replace all data-i18n elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.innerText = translations[currentLang][key];
+                }
+            });
+
+            updateDashboard();
+        }
+
+        // --- INIT APP ---
+        function initUserData() {
+            const profile = getUserProfile();
+            const bmi = (profile.weight / ((profile.height / 100) * (profile.height / 100))).toFixed(1);
+            let bmiStatus = "標準";
+            if (bmi < 18.5) bmiStatus = "過輕";
+            else if (bmi >= 24) bmiStatus = "偏重";
+
+            document.getElementById('profile-summary').innerText = `目標: ${profile.tdee || 1850} kcal | BMI ${bmi} (${bmiStatus})`;
+        }
+
+        window.onload = function() {
+            // Set default date display
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date-picker').value = today;
+
+            // Check persistent login state
+            const activeUser = localStorage.getItem('fitsecret_active_user');
+            if (activeUser) {
+                loginUser(activeUser);
+            }
+        };
+    </script>
+</body>
+</html>
